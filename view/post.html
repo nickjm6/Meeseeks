@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title></title>
+        
+        <style>
+            
+            body {
+                background-color: rgb(234, 234, 234);
+            }
+            
+            article {
+                margin: auto;
+                width: 50vw;
+            }
+            
+            nav {
+                background-color: white;
+            }
+            
+            div {
+
+            }
+            
+            img {
+                width: 15vw;
+                position: absolute;
+                left: 9vw;
+            }
+            
+            div {
+                margin-left: 1vw;
+                margin-bottom: 1vh;
+                background-color: white;
+                border: 1px solid rgb(200, 200, 200);
+                padding: 5px;
+            }
+            
+            #two {
+                margin-left: 2vw;
+            }
+            
+            video {
+                height: 30vh;
+                margin-bottom: 1vh;
+            }
+            
+        </style>
+        
+        <script>
+            function titleColor() {
+                var title = document.querySelector("#title");
+                var newColor = '#'
+                var digits = '0123456789ABCDEF'
+                
+                for (var i = 0; i < 6; i++) {
+                    newColor += digits[Math.floor(Math.random()*16)];
+                }
+                
+                title.innerHTML += "X";
+                title.style.color = newColor;
+            }
+        </script>
+        
+    </head>
+    
+    <body>
+        
+        <nav>
+            <table>
+                <tr>
+                    <td><a href="/">Home</a></td>
+                    <td>></td>
+                    <td><a href="/iPhoneX">iPhone X</a></td>
+                    <td>></td>
+                    <td>The charger falls out...</td>
+                </tr>
+            </table>
+        </nav>
+        
+        <article>
+            
+            <h1 id="title" onclick="titleColor()">iPhone X</h1>
+            <img src="Resources/phones/iPhone%20X.png" alt="iPhone X">
+        
+            <section id="post">
+                <p><strong>The charger falls out of the port too easily</strong></p>
+                <p>If I use my phone while it is charging, the charger disconnects too easily. This happens when I tilt it sideways or rest the charger on a surface.</p>
+                <video src="products/iPhoneX/charger-video.mp4" controls muted></video>
+            </section>
+
+            <section id="comments">
+                <div>OP is a faggot</div>
+                <div>omg I have this problem too! so annoying</div>
+                <div>Apple has really taken a nosedive as a company. I remember the days when they made quality products. Now everything is cheap chinese quality shit and the customer service sucks too! This is why I switched to Samsung years ago!</div>
+                <div id="two">If you switched to Samsung then why are you commenting on a post about an Apple product??</div>
+            </section>
+        
+        </article>
+        
+    </body>
+    
+</html>

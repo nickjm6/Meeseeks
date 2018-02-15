@@ -1,0 +1,168 @@
+<!--***********-->
+<!--Meeseeks***-->
+<!--iPhone X.htm-->
+<!--***********-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/jquery.min.js"></script>
+    <script type='text/javascript' src='/javascript/knockout.js'></script>
+    <script src="/javascript/product.js"></script>
+
+</head>
+
+<body class="bg-secondary">
+
+    <!--Nav Bar-->
+    <nav class="navbar navbar-expand-sm bg-dark mb-5" navbar-dark>
+        <a href="/" class="navbar-brand">
+            <img src="resources/home-button.png" alt="logo" style="width: 40px;">
+        </a>
+
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 1</button></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 2</button></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 3</button></a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <!--Product Image-->
+            <div class="col-md-3">
+                <img data-bind="attr: {src: imageSource}" alt="iPhone X" style="height: 50vh;">
+            </div>
+
+            <!--Posts column-->
+            <div class="col-xl-9">
+                <div class="card">
+
+                    <!--Column header-->
+                    <div class="card-header bg-primary text-light"><h2>iPhone X</h2></div>
+
+                    <!--New Post Form-->
+                    <div class="list-group-item">
+                        <form method='post' action="/bugreport">
+                            <div class="form-group">
+                                <label>New Comment</label>
+                                <textarea name="bugDescription" class="form-control" placeholder="Provide enough detail for others to reproduce the issue"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="btn-group">     
+                                    <button type="button" class="btn btn-warning">Form</button>
+                                    <button type="button" class="btn btn-danger">Function</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Optional: Upload a picture or video to help explain the bug</label>
+                                <br>
+                                <input type="file">
+                            </div>
+                            <input name="productId" hidden="true" data-bind="value: productId" />
+                            <input name="productName" hidden="true" data-bind="value: productName" />
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+
+                    <!--First post-->
+                    <div class="card-block">
+                        <div class="list-group">
+
+                            <a class="list-group-item list-group-item-action">
+                                <small>5 months ago</small>
+                                <h3 class="mb-0">No audio jack</h3>
+                                <span class="badge badge-warning">Form</span>
+                                <small class="font-weight-bold text-secondary">@audiophile75</small>
+                                <div class="row">
+                                        <div class="col-xl-1 text-center">
+                                            <p>&#9650;</p>
+                                        <p>10.9k</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>This model seems to have been designed without a place to plug in my shitty headphones. Even though the audio jack has caused me great pain my entire life, I'm going to defend it to my grave because I'm afraid of change. The outdated design of this part often causes one of the audio channels to cut out so I have to constantly hold the headphone jack to one side but fuck logic! Anyone who disagrees with me is an idiot and a pagan.</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">2.3k Comments</div>
+                            </a>
+
+                            <a class="list-group-item list-group-item-action" href="charger-post.htm">
+                                <small>3 months ago</small>
+                                <h3 class="mb-0">The charger falls out of the port too easily</h3>
+                                <span class="badge badge-danger">Function</span>
+                                <small class="font-weight-bold text-secondary">@sleepygary</small>
+                                <div class="row">
+                                        <div class="col-xl-1 text-center">
+                                            <p>&#9650;</p>
+                                        <p>503</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>If I use my phone while it is charging, the charger disconnects too easily. This happens when I tilt it sideways or rest the charger on a surface.</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">210 Comments</div>
+                            </a>
+
+                            <a class="list-group-item list-group-item-action">
+                                <small>5 days ago</small>
+                                <h3 class="mb-0">The volume buttons are slightly too high</h3>
+                                <span class="badge badge-warning">Form</span>
+                                <small class="font-weight-bold text-secondary">@lawyerJACK</small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p>7</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>I have really small hands and it's difficult to reach the volume buttons while I am using the phone. I think the next model should move the volume buttons down so that everyone can reach them no matter what size hand they have!</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">3 Comments</div>
+                            </a>
+
+                            <a class="list-group-item list-group-item-action">
+                                <small>5 days ago</small>
+                                <h3 class="mb-0">The volume buttons are slightly too high</h3>
+                                <span class="badge badge-warning">Form</span>
+                                <small class="font-weight-bold text-secondary">@lawyerJACK</small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p>7</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>I have really small hands and it's difficult to reach the volume buttons while I am using the phone. I think the next model should move the volume buttons down so that everyone can reach them no matter what size hand they have!</p>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">3 Comments</div>
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
