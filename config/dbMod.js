@@ -4,8 +4,9 @@ var Product = require("./Product")
 var Comment = require("./Comment")
 var mongoose = require("mongoose")
 
-var addBug = function(description, userId, productId, done){
+var addBug = function(title, description, userId, productId, done){
 	var newBugReport = new BugReport({_id: mongoose.Types.ObjectId()});
+	newBugReport.title = title;
 	newBugReport.description = description;
 	newBugReport.user_id = userId;
 	newBugReport.product_id = productId;

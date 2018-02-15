@@ -137,11 +137,13 @@ app.post("/bugreport", function(req, res){
 	var description;
 	var userId;
 	var productId;
-	if(req.body.bugDescription && req.body.productId && req.isAuthenticated()){
+	var title;
+	if(req.body.title && req.body.bugDescription && req.body.productId && req.isAuthenticated()){
+		title = req.body.title;
 		description = req.body.bugDescription;
 		productId = req.body.productId
 		userId = req.user["_id"];
-		dbMod.addBug(description, userId, productId, function(bug){
+		dbMod.addBug(title, description, userId, productId, function(bug){
 			res.redirect("/product?productName=" + req.body.productName);
 		})
 
