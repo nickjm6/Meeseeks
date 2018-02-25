@@ -1,6 +1,6 @@
-var Comment = require("./Comment");
-var Bug = require("./BugReport");
-var Product = require("./Product");
+var Comment = require("./Models/Comment");
+var Bug = require("./Models/BugReport");
+var Product = require("./Models/Product");
 
 var getComments = function(bugId, done){
 	Comment.find({"bug_id": bugId}).sort({"upvotes": -1}).exec(function(err, comments){

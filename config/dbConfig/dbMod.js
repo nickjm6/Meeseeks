@@ -1,7 +1,7 @@
-var User = require("./User")
-var BugReport = require("./BugReport")
-var Product = require("./Product")
-var Comment = require("./Comment")
+var User = require("./Models/User")
+var BugReport = require("./Models/BugReport")
+var Product = require("./Models/Product")
+var Comment = require("./Models/Comment")
 var mongoose = require("mongoose")
 
 var addBug = function(title, description, userId, productId, done){

@@ -1,9 +1,9 @@
 var mongoose = require("mongoose");
-var Product = require("./Product");
-var User = require("./User");
-var Comment = require("./Comment");
-var BugReport = require("./BugReport")
-var config = require("./config");
+var Product = require("./Models/Product");
+var User = require("./Models/User");
+var Comment = require("./Models/Comment");
+var BugReport = require("./Models/BugReport")
+var config = require("../config");
 
 //set up mongo server
 var mongoDB = config.mongoAddr;

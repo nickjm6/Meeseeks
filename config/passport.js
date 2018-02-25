@@ -2,7 +2,7 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var mongoose = require("mongoose");
 
-var User = require("./User")
+var User = require("./dbConfig/Models/User")
 
 var auth = require("./config")
 

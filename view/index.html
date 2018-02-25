@@ -11,14 +11,29 @@
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <script type='text/javascript' src='/javascript/knockout.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="//code.jquery.com/jquery.min.js"></script>
 
         <title>Meeseeks</title>
 
     </head>
 
     <body>
-
         <!--Jumbotron-->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class='navbar-header'>
+              <a class="navbar-brand" href="#">Meeseeks</a>
+            </div>
+            <ul class="nav navbar-nav" style="text-align: right;">
+              <li><a href="/auth/facebook" class="btn btn-primary" data-bind="visible: !isSignedIn()">
+                <span class="fa fa-facebook"></span> Facebook Sign-In</a>
+              </li>
+              <li><a href="/logout" class="btn btn-danger" data-bind="visible: isSignedIn()">Logout</a></li>
+            </ul>
+          </div>
+        </nav>
         <div class="jumbotron jumbotron-fluid text-center mb-0">
             <div class="container">
                 <img src="resources/jumbotron-image.png" alt="Title Image" height="400">
@@ -41,22 +56,22 @@
                                 <img src="resources/phones/iPhone X.png" alt="iPhone X" style="height: 30vh;">
                                 <h3>iPhone X</h3>
                             </li></a>
-                            <li class="list-inline-item text-center">
+                            <a href="/product?productName=Galaxy S8"><li class="list-inline-item text-center">
                                 <img src="resources/phones/Galaxy S8.png" alt="Galaxy S8" style="height: 30vh;">
                                 <h3>Galaxy S8</h3>
-                            </li>
-                            <li class="list-inline-item text-center">
+                            </li></a>
+                            <a href="/product?productName=iPhone 8"><li class="list-inline-item text-center">
                                 <img src="resources/phones/iPhone 8.png" alt="iPhone 8" style="height: 30vh;">
                                 <h3>iPhone 8</h3>
-                            </li>
-                            <li class="list-inline-item text-center">
+                            </li></a>
+                            <a href="/product?productName=Pixel"><li class="list-inline-item text-center">
                                 <img src="resources/phones/Pixel.png" alt="Pixel" style="height: 30vh;">
                                 <h3>Pixel</h3>
-                            </li>
-                            <li class="list-inline-item text-center">
+                            </li></a>
+                            <a href="/product?productName=iPhone 6s"><li class="list-inline-item text-center">
                                 <img src="resources/phones/iPhone 6s.png" alt="iPhone 6S" style="height: 30vh;">
                                 <h3>iPhone 6s</h3>
-                            </li>
+                            </li></a>
                         </ul>
                     </li>
                     <li class="list-group-item">
@@ -88,6 +103,20 @@
                 </ul>
             </div>
         </div>
-
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var app = {isSignedIn: ko.observable()};
+                var getSignedInStatus = function(){
+                    $.get("/isLoggedIn", function(data){
+                        if(data === true || data === false)
+                            app.isSignedIn(data);
+                        else
+                            app.isSignedIn(false);
+                    }).fail(function(err){app.isSignedIn(false)});
+                }
+                getSignedInStatus();
+                ko.applyBindings(app)
+            })
+        </script>
     </body>
 </html>

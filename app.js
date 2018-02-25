@@ -8,8 +8,8 @@ var passport = require("passport");
 
 var config = require("./config/config");
 
-var dbMod = require("./config/dbMod");
-var dbAccess = require("./config/dbAccess")
+var dbMod = require("./config/dbConfig/dbMod");
+var dbAccess = require("./config/dbConfig/dbAccess")
 
 require("./config/passport")(passport)
 
@@ -33,10 +33,7 @@ app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/
 
 //get requests
 app.get("/", function(req, res){
-	if(req.isAuthenticated())
-		res.sendFile(__dirname + "/view/index.html");
-	else
-		res.redirect("/login")
+	res.sendFile(__dirname + "/view/index.html");
 })
 
 app.get("/login", function(req, res){
@@ -58,6 +55,10 @@ app.get("/post", function(req, res){
 // app.get("/upvotePage", function(req, res){
 // 	res.sendFile(__dirname + "/view/upvotePage.html")
 // })
+
+app.get("/isLoggedIn", function(req, res){
+	res.send(req.isAuthenticated());
+})
 
 app.get("/getProductId", function(req, res){
 	if(req.query.productName){
