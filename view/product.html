@@ -12,8 +12,9 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="//code.jquery.com/jquery.min.js"></script>
     <script type='text/javascript' src='/javascript/knockout.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="javascript/bootstrap.min.js"></script>
     <script src="/javascript/product.js"></script>
 
 </head>
@@ -39,6 +40,56 @@
         </ul>
     </nav>
 
+     <!--modal containing form to submit new post-->
+    <div class="modal fade" id="newBugFormModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!--modal header-->
+                <div class="modal-header">
+                    <h1 class="modal-title">Submit a new bug</h1>
+                </div>
+
+                <form method='post' action='bugreport'> 
+                <!--modal body-->
+                <div class="modal-body">                                    
+                        <div class="form-group">
+                            <input type="text" name="title" class="form-control" placeholder="Add a descriptive title">
+                        </div>
+
+                        <div class="form-group">
+                            <textarea class="form-control" name="bugDescription" placeholder="Provide enough detail for others to reproduce the issue"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-warning">Form</button>
+                                <button type="button" class="btn btn-danger">Function</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Optional: Upload a picture or video to help explain the bug</label>
+                            <br>
+                            <input type="file">
+                        </div>
+
+                        <input name="productId" hidden="true" data-bind="value: productId" />
+
+                        <input name="productName" hidden="true" data-bind="value: productName" />
+                </div>
+
+                <!--modal footer-->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Discard</button>
+                </div>
+                
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="row">
             <!--Product Image-->
@@ -51,33 +102,11 @@
                 <div class="card">
 
                     <!--Column header-->
-                    <div class="card-header bg-primary text-light"><h2>iPhone X</h2></div>
+                    <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div>
 
-                    <!--New Post Form-->
+                    <!--button to open modal to make new post-->
                     <div class="list-group-item">
-                        <form method='post' action="/bugreport">
-                            <div class="form-group">
-                                <label>New Comment</label>
-                                <textarea name="bugDescription" class="form-control" placeholder="Provide enough detail for others to reproduce the issue"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="btn-group">     
-                                    <button type="button" class="btn btn-warning">Form</button>
-                                    <button type="button" class="btn btn-danger">Function</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Optional: Upload a picture or video to help explain the bug</label>
-                                <br>
-                                <input type="file">
-                            </div>
-                            <input name="productId" hidden="true" data-bind="value: productId" />
-                            <input name="productName" hidden="true" data-bind="value: productName" />
-                            <input name="title" hidden="true" value="Bug Title(Chris please put in an input field to add this)"/>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newBugFormModal">Submit a new bug</button>
                     </div>
 
                     <!--First post-->
