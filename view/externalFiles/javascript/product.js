@@ -26,11 +26,17 @@ $(document).ready(function(){
 		var age = $("<small>5 months ago</small>")
 		var title = $("<h3 class='mb-0'>" + post.title + "</h3>")
 		var warningThing = $("<span class='badge badge-warning'>Form</span>")
-		var user = $("<small class='font-weight-bold text-secondary'>     @" + post.user_id + "</small>")
+		var user = $("<small class='font-weight-bold text-secondary'></small>")
 		var body = $("<div class='row'></div>")
 		var upvotes = $("<div class='col-xl-1 text-center'><p>&#9650;</p><p>" + post.upvotes + "</p><p>&#9660</p></div>");
 		var postText = $("<div class='col-xl-11'><p>" + post.description + "</p></div>")
 		var comments = $("<div class='alert alert-info'>2.3k Comments</div>");
+
+		$.get("/getUserById", {userId: post.user_id}, function(username){
+			user.text(" @" + username);
+		}).fail(function(err){
+			alert(err.description)
+		})
 
 		postLink.append(age)
 		postLink.append(title);

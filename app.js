@@ -100,6 +100,17 @@ app.get("/comments", function(req, res){
 		res.status(500).send("Oops, you have not provided me with a bug ID")
 })
 
+app.get("/getUserById", function(req, res){
+	if(req.query.userId){
+		dbMod.getUser(req.query.userId, function(err, username){
+			if(err)
+				res.status(500).send(err.description)
+			else
+				res.send(username)
+		})
+	}
+})
+
 app.get('/auth/facebook', passport.authenticate('facebook', { 
     scope : ['public_profile', 'email']
 }));
