@@ -1,6 +1,7 @@
 var Comment = require("./Models/Comment");
 var Bug = require("./Models/BugReport");
 var Product = require("./Models/Product");
+var User = require("./Models/User");
 
 var getComments = function(bugId, done){
 	Comment.find({"bug_id": bugId}).sort({"upvotes": -1}).exec(function(err, comments){
@@ -26,6 +27,18 @@ var getProduct = function(productName, done){
 	})
 }
 
+var getProducts = function(done){
+	Product.find({}, function(err, products){
+		if(err) return done(err);
+		var productList = []
+		var prodLength = products.length;
+		for(let i = 0; i < prodLength; i++){
+			productList.push(products[i].name);
+		}
+		return done(null, productList)
+	})
+}
+
 var getBug = function(bugId, done){
 	Bug.findOne({"_id": bugId}, function(err, bug){
 		if(err) return done(err);
@@ -34,9 +47,19 @@ var getBug = function(bugId, done){
 	})
 }
 
+var getUser = function(userId, done){
+	User.findOne({_id: userId}, function(err, user){
+		if(err) return done(err);
+		if(user) return done(null, user.name)
+		else return done(new Error("User does not exist"))
+	})
+}
 
 module.exports = {
 	getComments: getComments,
 	getBugReports: getBugReports,
-	getProduct: getProduct
+	getBug: getBug,
+	getProduct: getProduct,
+	getProducts: getProducts,
+	getUser: getUser
 }

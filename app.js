@@ -16,9 +16,7 @@ require("./config/passport")(passport)
 
 //set up mongo server
 var mongoDB = config.mongoAddr;
-mongoose.connect(mongoDB, {
-	useMongoClient: true
-});
+mongoose.connect(mongoDB);
 
 //set up app
 var app = express();
@@ -31,7 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session())
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
 
-//get requests
+//get page requests
 app.get("/", function(req, res){
 	res.sendFile(__dirname + "/view/index.html");
 })
@@ -48,14 +46,7 @@ app.get("/post", function(req, res){
 	res.sendFile(__dirname + "/view/post.html");
 })
 
-// app.get("/postComments", function(req, res){
-// 	res.sendFile(__dirname + "/view/postComments.html")
-// })
-
-// app.get("/upvotePage", function(req, res){
-// 	res.sendFile(__dirname + "/view/upvotePage.html")
-// })
-
+//get info requests
 app.get("/isLoggedIn", function(req, res){
 	res.send(req.isAuthenticated());
 })
@@ -73,6 +64,13 @@ app.get("/getProductId", function(req, res){
 	} else{
 		res.status(500).send("Oops, you need to tell me what the product name is")
 	}
+})
+
+app.get("/products", function(req, res){
+	dbAccess.getProducts(function(err, products){
+		if(err) res.status(500).send(err);
+		else res.send(products);
+	})
 })
 
 app.get("/bugReports", function(req, res){
@@ -102,7 +100,7 @@ app.get("/comments", function(req, res){
 
 app.get("/getUserById", function(req, res){
 	if(req.query.userId){
-		dbMod.getUser(req.query.userId, function(err, username){
+		dbAccess.getUser(req.query.userId, function(err, username){
 			if(err)
 				res.status(500).send(err.description)
 			else
@@ -111,6 +109,7 @@ app.get("/getUserById", function(req, res){
 	}
 })
 
+//passport get requests
 app.get('/auth/facebook', passport.authenticate('facebook', { 
     scope : ['public_profile', 'email']
 }));
@@ -120,13 +119,6 @@ app.get('/auth/facebook/callback',
         successRedirect : '/',
         failureRedirect : '/login'
 }));
-
-app.get("/profile", function(req, res){
-	if(req.isAuthenticated())
-		res.send(req.user)
-	else
-		res.send("You are not logged in to facebook")
-})
 
 // app.get('/auth/google', passport.authenticate('google', { 
 //     scope : ['profile', 'email']
@@ -144,7 +136,6 @@ app.get('/logout', function(req, res) {
 });
 
 //post requests
-
 app.post("/bugreport", function(req, res){
 	var description;
 	var userId;

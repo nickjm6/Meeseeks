@@ -89,20 +89,9 @@ var upvoteComment = function(userID, commentID, done){
 	});
 }
 
-var getUser = function(userId, done){
-	User.findOne({_id: userId}, function(err, user){
-		if(err) return done(err);
-		if(user) return done(null, user.name)
-		else return done(new Error("User does not exist"))
-	})
-}
-
-
-
 module.exports = {
 	addBug: addBug,
 	addComment: addComment,
 	upvoteBug: upvoteBug,
-	upvoteComment: upvoteComment,
-	getUser: getUser
+	upvoteComment: upvoteComment
 }
