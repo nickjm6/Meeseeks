@@ -23,7 +23,7 @@ $(document).ready(function(){
 		var postList = $("#postList");
 
 		var postLink = $("<a class='list-group-item list-group-item-action'></a>")
-		var age = $("<small>5 months ago</small>")
+		var age = $("<small></small>")
 		var title = $("<h3 class='mb-0'>" + post.title + "</h3>")
 		var warningThing = $("<span class='badge badge-warning'>Form</span>")
 		var user = $("<small class='font-weight-bold text-secondary'></small>")
@@ -36,6 +36,21 @@ $(document).ready(function(){
 			user.text(" @" + username);
 		}).fail(function(err){
 			alert(err.description)
+		})
+
+		$.get("/TimeSinceBugReport", {bugId: post["_id"]}, function(timeSince){
+			age.text(timeSince + " Ago")
+		}).fail(function(err){
+			alert(err.description);
+		})
+
+		$.get("/numComments", {bugId: post["_id"]}, function(numComments){
+			var txt;
+			if(numComments === 1)
+				txt = "1 Comment";
+			else
+				txt = numComments + " Comments"
+			comments.text(txt);
 		})
 
 		postLink.append(age)

@@ -82,7 +82,7 @@ app.get("/bugReports", function(req, res){
 				res.send(reports)
 		})
 	} else{
-		res.status(500).send("Oops, you have not provided me with a product ID")
+		res.status(400).send("Oops, you have not provided me with a product ID")
 	}
 })
 
@@ -95,8 +95,21 @@ app.get("/comments", function(req, res){
 				res.send(comments)
 		})
 	} else
-		res.status(500).send("Oops, you have not provided me with a bug ID")
+		res.status(400).send("Oops, you have not provided me with a bug ID")
 })
+
+app.get("/numComments", function(req, res){
+	if(req.query.bugId){
+		dbAccess.getComments(req.query.bugId, function(err, comments){
+			if(err)
+				res.status(500).send(err.description);
+			else
+				res.send(comments.length + "");
+		})
+	} else{
+		res.status(400).send("Oops, you have not provided me with a bug ID")
+	}
+});
 
 app.get("/getUserById", function(req, res){
 	if(req.query.userId){
@@ -106,6 +119,17 @@ app.get("/getUserById", function(req, res){
 			else
 				res.send(username)
 		})
+	} else{
+		res.status(400).send("You must provide me with a user Id")
+	}
+});
+
+app.get("/TimeSinceBugReport", function(req, res){
+	if(req.query.bugId){
+		res.send(dbAccess.getTimeSince(req.query.bugId));
+	}
+	else{
+		res.status(400).send("Oops, you must provide me with a bug Id")
 	}
 })
 
