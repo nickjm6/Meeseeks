@@ -28,6 +28,14 @@ var getProduct = function(productName, done){
 	})
 }
 
+var getProductById = function(productId, done){
+	Product.findOne({_id: productId}, function(err, product){
+		if(err) return done(err)
+		if(product) return done(null, product.name);
+		return done(new Error("Product does not exist"));
+	})
+}
+
 var getProducts = function(done){
 	Product.find({}, function(err, products){
 		if(err) return done(err);
@@ -95,6 +103,7 @@ module.exports = {
 	getBug: getBug,
 	getProduct: getProduct,
 	getProducts: getProducts,
+	getProductById: getProductById,
 	getUser: getUser,
 	getTimeSince: getTimeSince
 }

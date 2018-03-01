@@ -165,15 +165,16 @@ app.post("/bugreport", function(req, res){
 	var userId;
 	var productId;
 	var title;
-	if(req.body.title && req.body.bugDescription && req.body.productId && req.isAuthenticated()){
+	var postType
+	if(req.body.title && req.body.bugDescription && req.body.productId && req.isAuthenticated() && req.body.postType){
 		title = req.body.title;
 		description = req.body.bugDescription;
 		productId = req.body.productId
+		postType = req.body.postType
 		userId = req.user["_id"];
-		dbMod.addBug(title, description, userId, productId, function(bug){
-			res.redirect("/product?productName=" + req.body.productName);
-		})
-
+		dbMod.addBug(title, description, userId, productId, postType, function(bug){
+			res.send(bug)
+		});
 	} else{
 		res.status(500).send("I'm sorry, but you did not provide the proper details or you are not logged in");
 	}

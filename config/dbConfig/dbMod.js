@@ -4,12 +4,13 @@ var Product = require("./Models/Product")
 var Comment = require("./Models/Comment")
 var mongoose = require("mongoose")
 
-var addBug = function(title, description, userId, productId, done){
+var addBug = function(title, description, userId, productId, postType, done){
 	var newBugReport = new BugReport({_id: mongoose.Types.ObjectId()});
 	newBugReport.title = title;
 	newBugReport.description = description;
 	newBugReport.user_id = userId;
 	newBugReport.product_id = productId;
+	newBugReport.post_type = postType;
 	newBugReport.upvotes = 0;
 	newBugReport.save(function(err) {
         if (err)
