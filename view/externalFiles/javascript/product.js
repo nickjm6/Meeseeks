@@ -89,14 +89,13 @@ $(document).ready(function(){
 			alert("Please specify either 'Form' or 'Function' for Post Type")
 			return;
 		}
-		alert(postType)
-		// $.post("/bugReport", 
-		// 	{title: title, bugDescription: description, productId: productId,  postType: postType}, function(data){
-		// 	addPost(data);
-		// 	$("#dismiss").click();
-		// }).fail(function(err){
-		// 	alert(err);
-		// });
+		$.post("/bugReport", 
+			{title: title, bugDescription: description, productId: productId,  postType: postType}, function(data){
+			addPost(data);
+			$("#dismiss").click();
+		}).fail(function(err){
+			alert(err);
+		});
 	}
 
 	$("#postSubmit").click(function(){
