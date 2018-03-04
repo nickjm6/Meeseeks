@@ -51,7 +51,7 @@ var getProducts = function(done){
 var getBug = function(bugId, done){
 	Bug.findOne({"_id": bugId}, function(err, bug){
 		if(err) return done(err);
-		if(product) return done(null, bug)
+		if(bug) return done(null, bug)
 		return done(new Error("Bug does not exist"))
 	})
 }

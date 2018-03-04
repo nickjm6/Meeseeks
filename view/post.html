@@ -1,104 +1,169 @@
-<!DOCTYPE html>
-<html>
-    
-    <head>
-        <title></title>
-        
-        <style>
-            
-            body {
-                background-color: rgb(234, 234, 234);
-            }
-            
-            article {
-                margin: auto;
-                width: 50vw;
-            }
-            
-            nav {
-                background-color: white;
-            }
-            
-            div {
+<!--****************-->
+<!--Meeseeks********-->
+<!--post.html-->
+<!--****************-->
 
-            }
-            
-            img {
-                width: 15vw;
-                position: absolute;
-                left: 9vw;
-            }
-            
-            div {
-                margin-left: 1vw;
-                margin-bottom: 1vh;
-                background-color: white;
-                border: 1px solid rgb(200, 200, 200);
-                padding: 5px;
-            }
-            
-            #two {
-                margin-left: 2vw;
-            }
-            
-            video {
-                height: 30vh;
-                margin-bottom: 1vh;
-            }
-            
-        </style>
-        
-        <script>
-            function titleColor() {
-                var title = document.querySelector("#title");
-                var newColor = '#'
-                var digits = '0123456789ABCDEF'
-                
-                for (var i = 0; i < 6; i++) {
-                    newColor += digits[Math.floor(Math.random()*16)];
-                }
-                
-                title.innerHTML += "X";
-                title.style.color = newColor;
-            }
-        </script>
-        
-    </head>
-    
-    <body>
-        
-        <nav>
-            <table>
-                <tr>
-                    <td><a href="/">Home</a></td>
-                    <td>></td>
-                    <td><a href="/iPhoneX">iPhone X</a></td>
-                    <td>></td>
-                    <td>The charger falls out...</td>
-                </tr>
-            </table>
-        </nav>
-        
-        <article>
-            
-            <h1 id="title" onclick="titleColor()">iPhone X</h1>
-            <img src="Resources/phones/iPhone%20X.png" alt="iPhone X">
-        
-            <section id="post">
-                <p><strong>The charger falls out of the port too easily</strong></p>
-                <p>If I use my phone while it is charging, the charger disconnects too easily. This happens when I tilt it sideways or rest the charger on a surface.</p>
-                <video src="products/iPhoneX/charger-video.mp4" controls muted></video>
-            </section>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-            <section id="comments">
-                <div>OP is a faggot</div>
-                <div>omg I have this problem too! so annoying</div>
-                <div>Apple has really taken a nosedive as a company. I remember the days when they made quality products. Now everything is cheap chinese quality shit and the customer service sucks too! This is why I switched to Samsung years ago!</div>
-                <div id="two">If you switched to Samsung then why are you commenting on a post about an Apple product??</div>
-            </section>
-        
-        </article>
-        
-    </body>
-    
+    <!-- Optional JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type='text/javascript' src='/javascript/knockout.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="javascript/bootstrap.min.js"></script>
+    <script src="/javascript/post.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+  </head>
+
+<body class="bg-secondary">
+    <!--Nav Bar-->
+    <nav class="navbar navbar-expand-sm bg-dark mb-5" navbar-dark>
+        <a href="/" class="navbar-brand">
+            <img src="resources/home-button.png" alt="logo" style="width: 40px;">
+        </a>
+
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 1</button></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 2</button></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><button class="btn">Link 3</button></a>
+            </li>
+        </ul>
+    </nav>
+
+    <!--middle content-->
+    <div class="container">
+
+        <div class="row">
+            <!--product image-->
+            <div class="col-xl-3">
+                <img data-bind="attr: {src: imageSource}" alt="iPhone X" style="height: 50vh;">
+            </div>
+
+            <!--OP and comments-->
+            <div class="col-xl-9">
+                <div class="card">
+
+                    <a data-bind="attr: {href: productPath}">
+                        <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div></a>
+                    
+                    <div class="card-block">
+                        <ul class="list-group">
+
+                            <!--OP-->
+                            <li class="list-group-item">
+                                <small data-bind="text: howLongAgo"></small>
+                                <h3 class="mb-0" data-bind="text: bugTitle"></h3>
+                                <span class="badge" id="postTypeBadge"></span>
+                                <small class="font-weight-bold text-secondary" data-bind="text: posterName"></small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p data-bind="text: numComments"></p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p data-bind="text: bugDescription"></p>
+                                        <!-- <video src="resources/post-video.mp4" controls></video> -->
+                                    </div>
+                                </div>
+                            </li>
+
+                            <!--buttons for changing the type of comment you're viewing-->
+                            <li class="list-group-item text-center">
+                                <div class="btn-group">
+                                    <button id="btnQuestions" type="button" class="btn">Questions</button>
+                                    <button id="btnSolutions" type="button" class="btn">Solutions</button>
+                                    <button id="btnCompany" type="button" class="btn">Company Responses</button>
+                                </div>
+                            </li>
+
+                            <!--New Comment Form-->
+                            <li class="list-group-item">
+                                <form>
+                                    <div class="form-group">
+                                        <label>New Comment</label>
+                                        <textarea class="form-control"></textarea>
+                                        <br>
+                                        <button type="submit" class="btn">Submit</button>
+                                    </div>
+                                </form>
+                            </li>
+
+                            <div id="postColumn">
+                            <li class="list-group-item">
+                                <small>3 months ago</small>
+                                <small class="font-weight-bold text-secondary">@sleepygary</small>
+                                <p>OP is a faggot</p>
+                                <p>&#9650; -1 &#9660;</p>
+                            </li>
+                            </div>
+
+                            <!--comment format
+                            <li class="list-group-item">
+                                <small>3 months ago</small>
+                                <small class="font-weight-bold text-secondary">@sleepygary</small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p>15</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>omg I have this problem too! so annoying</p>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <small>3 months ago</small>
+                                <small class="font-weight-bold text-secondary">@sleepygary</small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p>-10</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>Apple has really taken a nosedive as a company. I remember the days when they made quality products. Now everything is cheap chinese quality shit and the customer service sucks too! This is why I switched to Samsung years ago!</p>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <small>3 months ago</small>
+                                <small class="font-weight-bold text-secondary">@sleepygary</small>
+                                <div class="row">
+                                    <div class="col-xl-1 text-center">
+                                        <p>&#9650;</p>
+                                        <p>11</p>
+                                        <p>&#9660;</p>
+                                    </div>
+                                    <div class="col-xl-11">
+                                        <p>If you switched to Samsung then why are you commenting on a post about an Apple product??</p>
+                                    </div>
+                                </div>
+                            </li>
+                            -->
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
 </html>

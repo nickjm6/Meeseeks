@@ -66,6 +66,19 @@ app.get("/getProductId", function(req, res){
 	}
 })
 
+app.get("/getProductName", function(req, res){
+	if(req.query.productId){
+		dbAccess.getProductById(req.query.productId, function(err, productName){
+			if(err)
+				res.status(500).send(err);
+			else
+				res.send(productName);
+		})
+	}else{
+		res.status(400).send("Oops, you have not provided me with a product ID")
+	}
+})
+
 app.get("/products", function(req, res){
 	dbAccess.getProducts(function(err, products){
 		if(err) res.status(500).send(err);
@@ -84,7 +97,20 @@ app.get("/bugReports", function(req, res){
 	} else{
 		res.status(400).send("Oops, you have not provided me with a product ID")
 	}
-})
+});
+
+app.get("/bugReport", function(req, res){
+	if(req.query.bugId){
+		dbAccess.getBug(req.query.bugId, function(err, bug){
+			if(err)
+				res.status(500).send(err);
+			else
+				res.send(bug);
+		})
+	}else{
+		res.status(400).send("Oops, you have not provided me with a bug ID")
+	}
+});
 
 app.get("/comments", function(req, res){
 	if(req.query.bugId){

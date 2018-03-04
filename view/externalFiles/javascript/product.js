@@ -22,7 +22,7 @@ $(document).ready(function(){
 	var addPost = function(post){
 		var postList = $("#postList");
 
-		var postLink = $("<a class='list-group-item list-group-item-action'></a>")
+		var postLink = $("<a class='bug-list list-group-item list-group-item-action'></a>")
 		var age = $("<small></small>")
 		var title = $("<h3 class='mb-0'>" + post.title + "</h3>")
 		var warningThing = $("<span class='badge'></span>")
@@ -70,6 +70,8 @@ $(document).ready(function(){
 		postLink.append(body);
 		postLink.append(comments);
 		postList.prepend(postLink)
+
+		postLink.attr("href", "/post?bugId=" + post["_id"])
 	}
 
 	var submitPost = function(){
@@ -94,7 +96,8 @@ $(document).ready(function(){
 			addPost(data);
 			$("#dismiss").click();
 		}).fail(function(err){
-			alert(err);
+			console.dir(err)
+			alert("Could not submit bug");
 		});
 	}
 
