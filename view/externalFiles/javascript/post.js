@@ -26,7 +26,7 @@ $(document).ready(function(){
 		imageSource: ko.observable(),
 		howLongAgo: ko.observable(),
 		posterName: ko.observable(),
-		numComments: ko.observable(),
+		upvotes: ko.observable(),
 		bugDescription: ko.observable()
 	};
 
@@ -59,14 +59,11 @@ $(document).ready(function(){
 			$("#postTypeBadge").addClass("badge-danger").text("Function")
 
 		app.bugDescription(bug.description);
+		app.upvotes(bug.upvotes);
 	})
 
 	$.get("/TimeSinceBugReport", {bugId: app.bugId()}, function(timeSince){
 		app.howLongAgo(timeSince + " Ago");
-	})
-
-	$.get("/numComments", {bugId: app.bugId()}, function(numComments){
-		app.numComments(numComments);
 	})
 
 	ko.applyBindings(app);
