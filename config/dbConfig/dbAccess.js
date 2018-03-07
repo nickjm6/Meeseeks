@@ -8,7 +8,11 @@ var getComments = function(bugId, done){
 	Comment.find({"bug_id": bugId}).sort({"upvotes": -1}).exec(function(err, comments){
 		if(err)
 			return done(err);
-		return done(null, comments)
+		var res = []
+		for(let i = 0; i < comments.length; i++){
+			res.push(comments[i]._id);
+		}
+		return done(null, res);
 	})
 }
 
@@ -16,7 +20,11 @@ var getBugReports = function(productId, done){
 	Bug.find({"product_id": productId}).sort({"upvotes": -1}).exec(function(err, bugs){
 		if(err)
 			return done(err);
-		return done(null, bugs);
+		var res = [];
+		for(let i = 0; i < bugs.length; i++){
+			res.push(bugs[i]._id);
+		}
+		return done(null, res);
 	});
 }
 
@@ -51,8 +59,55 @@ var getProducts = function(done){
 var getBug = function(bugId, done){
 	Bug.findOne({"_id": bugId}, function(err, bug){
 		if(err) return done(err);
-		if(bug) return done(null, bug)
-		return done(new Error("Bug does not exist"))
+		if(bug){
+			getUser(bug.user_id, function(err1, username){
+				if(err1) return done(err1)
+				getComments(bug._id, function(err2, comments){
+					if(err2) return done(err2)
+					getProductById(bug.product_id, function(err3, productName){
+						if(err3) return done(err3);
+						var numComments = comments.length
+						var commentText;
+						if(numComments === 1)
+							commentText = "1 Comment";
+						else
+							commentText = numComments + " Comments";
+						return done(null, {
+							id: bug._id,
+							title: bug.title,
+							description: bug.description,
+							product: productName,
+							post_type: bug.post_type,
+							username: " @" + username,
+							comments: commentText,
+							upvotes: bug.upvotes,
+							timeSince: getTimeSince(bug._id) + " Ago"
+						});
+					})
+				})
+			})
+
+		}else
+			return done(new Error("Bug does not exist"))
+	})
+}
+
+var getComment = function(commentId, done){
+	Comment.findOne({"_id": commentId}, function(err, comment){
+		if(err) return done(err);
+		if(comment){
+			getUser(comment.user_id, function(err1, username){
+				if(err1) return done(err1);
+				return done(null, {
+					commentText: comment.comment,
+					username: " @" + username,
+					timeSince: getTimeSince(comment._id) + " Ago",
+					upvotes: comment.upvotes
+				});
+			})
+		} else{
+			return done(new Error("Could not find a comment with that ID"))
+		}
 	})
 }
 
@@ -99,6 +154,7 @@ var getTimeSince = function(objectId){
 
 module.exports = {
 	getComments: getComments,
+	getComment: getComment,
 	getBugReports: getBugReports,
 	getBug: getBug,
 	getProduct: getProduct,

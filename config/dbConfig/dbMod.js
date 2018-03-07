@@ -15,7 +15,7 @@ var addBug = function(title, description, userId, productId, postType, done){
 	newBugReport.save(function(err) {
         if (err)
             throw err;
-        return done(newBugReport)
+        return done(newBugReport._id)
     });
 }
 
@@ -28,7 +28,7 @@ var addComment = function(bugId, userId, comment, done){
 	newComment.save(function(err){
 		if(err)
 			throw err;
-		return done(newComment)
+		return done(newComment._id)
 	})
 }
 

@@ -124,6 +124,17 @@ app.get("/comments", function(req, res){
 		res.status(400).send("Oops, you have not provided me with a bug ID")
 })
 
+app.get("/comment", function(req, res){
+	if(req.query.commentId){
+		dbAccess.getComment(req.query.commentId, function(err, comment){
+			if(err) res.status(500).send(err.description);
+			else res.send(comment);
+		})
+	} else{
+		res.status(400).send("Oops, you have not provided me with a comment ID");
+	}
+})
+
 app.get("/numComments", function(req, res){
 	if(req.query.bugId){
 		dbAccess.getComments(req.query.bugId, function(err, comments){
@@ -155,7 +166,7 @@ app.get("/TimeSinceBugReport", function(req, res){
 		res.send(dbAccess.getTimeSince(req.query.bugId));
 	}
 	else{
-		res.status(400).send("Oops, you must provide me with a bug Id")
+		res.status(400).send("Oops, you must provide me with a bug Id");
 	}
 })
 
@@ -215,11 +226,11 @@ app.post("/comment", function(req, res){
 		userId = req.user["_id"];
 		bugId = req.body.bugId
 		dbMod.addComment(bugId, userId, description, function(comment){
-			res.send("added comment");
+			res.send(comment);
 		})
 
 	} else{
-		res.status(500).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
 	}
 });
 
@@ -236,7 +247,7 @@ app.post("/upvote-comment", function(req, res){
 				res.send("Upvoted Comment")
 		})
 	} else{
-		res.status(500).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
 	}
 });
 
@@ -253,7 +264,7 @@ app.post("/upvote-bug", function(req, res){
 				res.send("Upvoted Bug Report");
 		})
 	} else{
-		res.status(500).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
 	}
 });
 

@@ -19,6 +19,20 @@ $(document).ready(function(){
 		}
 	}
 
+	var addComment = function(comment){
+		var list = $("#postList");
+		var listItem = $("<li class='list-group-item'></li>");
+		var age = $("<small>" + comment.timeSince + "</small>");
+		var username = $("<small class='font-weight-bold text-secondary'>" + comment.username + "</small>");
+		var commentText = $("<p>" + comment.commentText + "</p>")
+		var upvotes = $("<p>&#9650; " + comment.upvotes + "&#9660;</p>"); 
+		list.append(listItem);
+		listItem.append(age);
+		listItem.append(username);
+		listItem.append(commentText);
+		listItem.append(upvotes);
+	}
+
 	var app = {
 		bugId: ko.observable(),
 		bugTitle: ko.observable(),
@@ -43,27 +57,35 @@ $(document).ready(function(){
 	$.get("/bugReport", {bugId: app.bugId()}, function(bug){
 		document.title = bug.title;
 		app.bugTitle(bug.title);
-		$.get("/getProductName", {productId: bug.product_id}, function(productName){
-			app.productName(productName)
-		})
-
-		$.get("/getUserById", {userId: bug.user_id}, function(username){
-			app.posterName("@" + username)
-		}).fail(function(err){
-			alert(err.description)
-		})
-
+		app.bugDescription(bug.description);
+		app.productName(bug.product);
 		if(bug.post_type === "form")
 			$("#postTypeBadge").addClass("badge-warning").text("Form")
 		else
 			$("#postTypeBadge").addClass("badge-danger").text("Function")
 
-		app.bugDescription(bug.description);
+		app.posterName(bug.username);
 		app.upvotes(bug.upvotes);
+		app.howLongAgo(bug.timeSince);
 	})
+	$("#submitComment").click(function(){
+		var description = $("#commentDescription").val();
+		$.post("/comment", {comment: description, bugId: app.bugId()}, function(response){
+			$.get("/comment", {commentId: response}, function(comment){addComment(comment);})
+		}).fail(function(err){
+			console.log(err);
+			alert(err.responseText)
+		})
+	});
 
-	$.get("/TimeSinceBugReport", {bugId: app.bugId()}, function(timeSince){
-		app.howLongAgo(timeSince + " Ago");
+	$.get("/comments", {bugId: app.bugId}, function(comments){
+		comments.forEach(function(commentId){
+			$.get("/comment", {commentId: commentId}, function(comment){
+				addComment(comment);
+			}).fail(function(err){
+				alert(err.responseText)
+			})
+		})
 	})
 
 	ko.applyBindings(app);

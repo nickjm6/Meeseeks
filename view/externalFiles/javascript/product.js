@@ -23,35 +23,14 @@ $(document).ready(function(){
 		var postList = $("#postList");
 
 		var postLink = $("<a class='bug-list list-group-item list-group-item-action'></a>")
-		var age = $("<small></small>")
+		var age = $("<small>" + post.timeSince + "</small>")
 		var title = $("<h3 class='mb-0'>" + post.title + "</h3>")
 		var warningThing = $("<span class='badge'></span>")
-		var user = $("<small class='font-weight-bold text-secondary'></small>")
+		var user = $("<small class='font-weight-bold text-secondary'>" + post.username + "</small>")
 		var body = $("<div class='row'></div>")
 		var upvotes = $("<div class='col-xl-1 text-center'><p>&#9650;</p><p>" + post.upvotes + "</p><p>&#9660</p></div>");
 		var postText = $("<div class='col-xl-11'><p>" + post.description + "</p></div>")
-		var comments = $("<div class='alert alert-info'></div>");
-
-		$.get("/getUserById", {userId: post.user_id}, function(username){
-			user.text(" @" + username);
-		}).fail(function(err){
-			alert(err.description)
-		})
-
-		$.get("/TimeSinceBugReport", {bugId: post["_id"]}, function(timeSince){
-			age.text(timeSince + " Ago")
-		}).fail(function(err){
-			alert(err.description);
-		})
-
-		$.get("/numComments", {bugId: post["_id"]}, function(numComments){
-			var txt;
-			if(numComments === 1)
-				txt = "1 Comment";
-			else
-				txt = numComments + " Comments"
-			comments.text(txt);
-		})
+		var comments = $("<div class='alert alert-info'>" + post.comments + "</div>");
 
 		if(post.post_type === "form"){
 			warningThing.addClass("badge-warning");
@@ -71,7 +50,7 @@ $(document).ready(function(){
 		postLink.append(comments);
 		postList.prepend(postLink)
 
-		postLink.attr("href", "/post?bugId=" + post["_id"])
+		postLink.attr("href", "/post?bugId=" + post.id)
 	}
 
 	var submitPost = function(){
@@ -93,11 +72,11 @@ $(document).ready(function(){
 		}
 		$.post("/bugReport", 
 			{title: title, bugDescription: description, productId: productId,  postType: postType}, function(data){
-			addPost(data);
+			$.get("/bugReport", {bugId: data}, function(bug){addPost(bug)});
 			$("#dismiss").click();
 		}).fail(function(err){
 			console.dir(err)
-			alert("Could not submit bug");
+			alert(err.responseText);
 		});
 	}
 
@@ -133,8 +112,8 @@ $(document).ready(function(){
 	$.get("/GetProductId", {productName: app.productName()}, function(data){
 		app.productId(data);
 		$.get("/bugreports", {productId: data}, function(bugReports){
-			bugReports.forEach(function(report){
-				addPost(report)
+			bugReports.forEach(function(reportId){
+				$.get("/bugReport", {bugId: reportId}, function(report){addPost(report)})
 			})
 		}).fail(function(err){
 			alert("Cannot get bug reports")

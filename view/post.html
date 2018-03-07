@@ -59,7 +59,7 @@
                         <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div></a>
                     
                     <div class="card-block">
-                        <ul class="list-group">
+                        <ul class="list-group" id="postList">
 
                             <!--OP-->
                             <li class="list-group-item">
@@ -94,69 +94,12 @@
                                 <form>
                                     <div class="form-group">
                                         <label>New Comment</label>
-                                        <textarea class="form-control"></textarea>
+                                        <textarea class="form-control" id="commentDescription"></textarea>
                                         <br>
-                                        <button type="submit" class="btn">Submit</button>
+                                        <button type="button" id="submitComment" class="btn">Submit</button>
                                     </div>
                                 </form>
                             </li>
-
-                            <div id="postColumn">
-                            <li class="list-group-item">
-                                <small>3 months ago</small>
-                                <small class="font-weight-bold text-secondary">@sleepygary</small>
-                                <p>OP is a faggot</p>
-                                <p>&#9650; -1 &#9660;</p>
-                            </li>
-                            </div>
-
-                            <!--comment format
-                            <li class="list-group-item">
-                                <small>3 months ago</small>
-                                <small class="font-weight-bold text-secondary">@sleepygary</small>
-                                <div class="row">
-                                    <div class="col-xl-1 text-center">
-                                        <p>&#9650;</p>
-                                        <p>15</p>
-                                        <p>&#9660;</p>
-                                    </div>
-                                    <div class="col-xl-11">
-                                        <p>omg I have this problem too! so annoying</p>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="list-group-item">
-                                <small>3 months ago</small>
-                                <small class="font-weight-bold text-secondary">@sleepygary</small>
-                                <div class="row">
-                                    <div class="col-xl-1 text-center">
-                                        <p>&#9650;</p>
-                                        <p>-10</p>
-                                        <p>&#9660;</p>
-                                    </div>
-                                    <div class="col-xl-11">
-                                        <p>Apple has really taken a nosedive as a company. I remember the days when they made quality products. Now everything is cheap chinese quality shit and the customer service sucks too! This is why I switched to Samsung years ago!</p>
-                                    </div>
-                                </div>
-                            </li>
-
-                            <li class="list-group-item">
-                                <small>3 months ago</small>
-                                <small class="font-weight-bold text-secondary">@sleepygary</small>
-                                <div class="row">
-                                    <div class="col-xl-1 text-center">
-                                        <p>&#9650;</p>
-                                        <p>11</p>
-                                        <p>&#9660;</p>
-                                    </div>
-                                    <div class="col-xl-11">
-                                        <p>If you switched to Samsung then why are you commenting on a post about an Apple product??</p>
-                                    </div>
-                                </div>
-                            </li>
-                            -->
-
                         </ul>
                     </div>
                 </div>
