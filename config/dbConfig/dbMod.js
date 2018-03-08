@@ -4,6 +4,7 @@ var Product = require("./Models/Product")
 var Comment = require("./Models/Comment")
 var mongoose = require("mongoose")
 
+//Adds a bug to the database
 var addBug = function(title, description, userId, productId, postType, done){
 	var newBugReport = new BugReport({_id: mongoose.Types.ObjectId()});
 	newBugReport.title = title;
@@ -13,12 +14,12 @@ var addBug = function(title, description, userId, productId, postType, done){
 	newBugReport.post_type = postType;
 	newBugReport.upvotes = 0;
 	newBugReport.save(function(err) {
-        if (err)
-            throw err;
-        return done(newBugReport._id)
+        if (err) return done(err)
+        return done(null, newBugReport._id)
     });
 }
 
+//adds a comment to the DB
 var addComment = function(bugId, userId, comment, done){
 	var newComment = new Comment({_id: mongoose.Types.ObjectId()});
 	newComment.comment = comment;
@@ -26,12 +27,12 @@ var addComment = function(bugId, userId, comment, done){
 	newComment.bug_id = bugId;
 	newComment.upvotes = 0;
 	newComment.save(function(err){
-		if(err)
-			throw err;
-		return done(newComment._id)
+		if(err) return done(err);
+		return done(null, newComment._id)
 	})
 }
 
+//upvotes a bug, checking to see if the user has already upvoted this bug
 var upvoteBug = function(userID, bugID, done){
 	User.findOne({_id: userID}, function(err, user){
 		if(err) return done(err);
@@ -48,8 +49,8 @@ var upvoteBug = function(userID, bugID, done){
 						user.save(function(e1){
 							if(e1) return done(e1);
 							return done(null, bug);
-						})
-					})
+						});
+					});
 				} else{
 					return done(new Error("Bug Report does not exist"));
 				}
@@ -61,6 +62,7 @@ var upvoteBug = function(userID, bugID, done){
 	});
 }
 
+//Upvotes a comment
 var upvoteComment = function(userID, commentID, done){
 	User.findOne({_id: userID}, function(err, user){
 		if(err) return done(err);

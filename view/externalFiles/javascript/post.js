@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	//parses the URL to get the URL
 	var getBugId = function(){
 		var url = window.location.href;
 		try{
@@ -19,6 +20,7 @@ $(document).ready(function(){
 		}
 	}
 
+	//Adds a comment to the list of comments
 	var addComment = function(comment){
 		var list = $("#postList");
 		var listItem = $("<li class='list-group-item'></li>");
@@ -33,6 +35,7 @@ $(document).ready(function(){
 		listItem.append(upvotes);
 	}
 
+	//KO variables that the page will use
 	var app = {
 		bugId: ko.observable(),
 		bugTitle: ko.observable(),
@@ -54,6 +57,7 @@ $(document).ready(function(){
 
 	app.bugId(getBugId());
 
+	//Gets info on the bug report
 	$.get("/bugReport", {bugId: app.bugId()}, function(bug){
 		document.title = bug.title;
 		app.bugTitle(bug.title);
@@ -67,7 +71,22 @@ $(document).ready(function(){
 		app.posterName(bug.username);
 		app.upvotes(bug.upvotes);
 		app.howLongAgo(bug.timeSince);
-	})
+	}).fail(function(err){
+		alert(err.responseText);
+	});
+
+	$.get("/comments", {bugId: app.bugId}, function(comments){
+		comments.forEach(function(commentId){
+			$.get("/comment", {commentId: commentId}, function(comment){
+				addComment(comment);
+			}).fail(function(err){
+				alert(err.responseText)
+			});
+		});
+	}).fail(function(err){
+		alert(err.responseText);
+	});
+
 	$("#submitComment").click(function(){
 		var description = $("#commentDescription").val();
 		$.post("/comment", {comment: description, bugId: app.bugId()}, function(response){
@@ -78,15 +97,6 @@ $(document).ready(function(){
 		})
 	});
 
-	$.get("/comments", {bugId: app.bugId}, function(comments){
-		comments.forEach(function(commentId){
-			$.get("/comment", {commentId: commentId}, function(comment){
-				addComment(comment);
-			}).fail(function(err){
-				alert(err.responseText)
-			})
-		})
-	})
 
 	ko.applyBindings(app);
 });

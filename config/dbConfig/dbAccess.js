@@ -4,6 +4,7 @@ var Product = require("./Models/Product");
 var User = require("./Models/User");
 var mongoose = require("mongoose");
 
+//returns a list of IDs of comments for a bug report based on the bug id that is given
 var getComments = function(bugId, done){
 	Comment.find({"bug_id": bugId}).sort({"upvotes": -1}).exec(function(err, comments){
 		if(err)
@@ -16,6 +17,7 @@ var getComments = function(bugId, done){
 	})
 }
 
+//returns a list of IDs of bug reports for a product based on the product id that is given
 var getBugReports = function(productId, done){
 	Bug.find({"product_id": productId}).sort({"upvotes": -1}).exec(function(err, bugs){
 		if(err)
@@ -28,14 +30,16 @@ var getBugReports = function(productId, done){
 	});
 }
 
+//returns the id of a product based on the name it is given
 var getProduct = function(productName, done){
 	Product.findOne({"name": productName}, function(err, product){
 		if(err) return done(err);
-		if(product) return done(null, product)
-		return done(new Error("Product does not exist"))
+		if(product) return done(null, product._id)
+		return done(new Error("Product does not exist!"))
 	})
 }
 
+//Returns the name of the product based on the Product ID that is given
 var getProductById = function(productId, done){
 	Product.findOne({_id: productId}, function(err, product){
 		if(err) return done(err)
@@ -44,6 +48,7 @@ var getProductById = function(productId, done){
 	})
 }
 
+//Returns a list of all products stored in the DB
 var getProducts = function(done){
 	Product.find({}, function(err, products){
 		if(err) return done(err);
@@ -56,6 +61,7 @@ var getProducts = function(done){
 	})
 }
 
+//Returns crucial info for a bug report based on the Bug ID that is given
 var getBug = function(bugId, done){
 	Bug.findOne({"_id": bugId}, function(err, bug){
 		if(err) return done(err);
@@ -92,6 +98,7 @@ var getBug = function(bugId, done){
 	})
 }
 
+//Gets crucial information about a comment
 var getComment = function(commentId, done){
 	Comment.findOne({"_id": commentId}, function(err, comment){
 		if(err) return done(err);
@@ -111,6 +118,7 @@ var getComment = function(commentId, done){
 	})
 }
 
+//returns the user name based on a userID that is given
 var getUser = function(userId, done){
 	User.findOne({_id: userId}, function(err, user){
 		if(err) return done(err);
@@ -119,6 +127,7 @@ var getUser = function(userId, done){
 	})
 }
 
+//Returns a human readable time since something was added to the DB. it is based on the objectID of the field
 var getTimeSince = function(objectId){
 	var ts = mongoose.Types.ObjectId(objectId).getTimestamp();
 	var then = new Date(ts);
@@ -157,9 +166,6 @@ module.exports = {
 	getComment: getComment,
 	getBugReports: getBugReports,
 	getBug: getBug,
-	getProduct: getProduct,
 	getProducts: getProducts,
-	getProductById: getProductById,
-	getUser: getUser,
-	getTimeSince: getTimeSince
+	getProduct: getProduct,
 }

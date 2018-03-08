@@ -1,4 +1,4 @@
-//import necessary dependancies
+//-----------import necessary dependancies-----------------------------
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
@@ -13,12 +13,14 @@ var dbAccess = require("./config/dbConfig/dbAccess")
 
 require("./config/passport")(passport)
 
+//---------------------------------------------------------------------
 
-//set up mongo server
+//-----------set up mongo server--------------------------------------
 var mongoDB = config.mongoAddr;
 mongoose.connect(mongoDB);
+//--------------------------------------------------------------------
 
-//set up app
+//--------------set up app--------------------------------------------
 var app = express();
 app.use(express.static(__dirname + "/view/externalFiles"));
 app.use(cookieParser());
@@ -27,9 +29,11 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session())
-app.use(bodyParser.urlencoded({ extended: false })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
-//get page requests
+//-----------------------------------------------------------------------
+
+//--------------GET page requests---------------------------------------
 app.get("/", function(req, res){
 	res.sendFile(__dirname + "/view/index.html");
 })
@@ -46,51 +50,48 @@ app.get("/post", function(req, res){
 	res.sendFile(__dirname + "/view/post.html");
 })
 
-//get info requests
+//---------------------------------------------------------------------
+
+//------------------------GET info requests---------------------------
+//Lets the user know if they are logged in or not
 app.get("/isLoggedIn", function(req, res){
 	res.send(req.isAuthenticated());
 })
 
+//______________________GET Product information___________________
+//This will get the id of a product based on the name you give it
 app.get("/getProductId", function(req, res){
 	if(req.query.productName){
-		dbAccess.getProduct(req.query.productName, function(err, product){
+		dbAccess.getProduct(req.query.productName, function(err, productID){
 			if(err){
-				console.log(err)
-				res.status(500).send(err.description)
+				res.status(500).send(err.message)
 			}
 			else
-				res.send(product["_id"]);
+				res.send(productID);
 		})
 	} else{
-		res.status(500).send("Oops, you need to tell me what the product name is")
+		res.status(400).send("Oops, you need to tell me what the product name is")
 	}
 })
 
-app.get("/getProductName", function(req, res){
-	if(req.query.productId){
-		dbAccess.getProductById(req.query.productId, function(err, productName){
-			if(err)
-				res.status(500).send(err);
-			else
-				res.send(productName);
-		})
-	}else{
-		res.status(400).send("Oops, you have not provided me with a product ID")
-	}
-})
-
+//This will get a list of all of the products stored in the DB
 app.get("/products", function(req, res){
 	dbAccess.getProducts(function(err, products){
-		if(err) res.status(500).send(err);
+		if(err) res.status(500).send(err.message);
 		else res.send(products);
 	})
 })
 
+//______________________________________________________________________
+
+//_____________________GET info on bug reports__________________________
+
+//This will return a list of ids of bug reports based on the product ID that is given
 app.get("/bugReports", function(req, res){
 	if(req.query.productId){
 		dbAccess.getBugReports(req.query.productId, function(err, reports){
 			if(err)
-				res.status(500).send(err.description);
+				res.status(500).send(err.message);
 			else 
 				res.send(reports)
 		})
@@ -99,11 +100,12 @@ app.get("/bugReports", function(req, res){
 	}
 });
 
+//This will return crucial info about a bug report based on the id you give it
 app.get("/bugReport", function(req, res){
 	if(req.query.bugId){
 		dbAccess.getBug(req.query.bugId, function(err, bug){
 			if(err)
-				res.status(500).send(err);
+				res.status(500).send(err.message);
 			else
 				res.send(bug);
 		})
@@ -112,11 +114,17 @@ app.get("/bugReport", function(req, res){
 	}
 });
 
+
+//______________________________________________________________________
+
+//______________GET comment information________________________________
+
+//Returns a list of comments based on the Bug Id that is given
 app.get("/comments", function(req, res){
 	if(req.query.bugId){
 		dbAccess.getComments(req.query.bugId, function(err, comments){
 			if(err)
-				res.status(500).send(err.description);
+				res.status(500).send(err.message);
 			else 
 				res.send(comments)
 		})
@@ -124,10 +132,11 @@ app.get("/comments", function(req, res){
 		res.status(400).send("Oops, you have not provided me with a bug ID")
 })
 
+//Returns crucial info about a comment based on the comment ID that is given
 app.get("/comment", function(req, res){
 	if(req.query.commentId){
 		dbAccess.getComment(req.query.commentId, function(err, comment){
-			if(err) res.status(500).send(err.description);
+			if(err) res.status(500).send(err.message);
 			else res.send(comment);
 		})
 	} else{
@@ -135,42 +144,10 @@ app.get("/comment", function(req, res){
 	}
 })
 
-app.get("/numComments", function(req, res){
-	if(req.query.bugId){
-		dbAccess.getComments(req.query.bugId, function(err, comments){
-			if(err)
-				res.status(500).send(err.description);
-			else
-				res.send(comments.length + "");
-		})
-	} else{
-		res.status(400).send("Oops, you have not provided me with a bug ID")
-	}
-});
+//________________________________________________________________________________
+//--------------------------------------------------------------------------------
 
-app.get("/getUserById", function(req, res){
-	if(req.query.userId){
-		dbAccess.getUser(req.query.userId, function(err, username){
-			if(err)
-				res.status(500).send(err.description)
-			else
-				res.send(username)
-		})
-	} else{
-		res.status(400).send("You must provide me with a user Id")
-	}
-});
-
-app.get("/TimeSinceBugReport", function(req, res){
-	if(req.query.bugId){
-		res.send(dbAccess.getTimeSince(req.query.bugId));
-	}
-	else{
-		res.status(400).send("Oops, you must provide me with a bug Id");
-	}
-})
-
-//passport get requests
+//---------------------------passport GET requests--------------------------------
 app.get('/auth/facebook', passport.authenticate('facebook', { 
     scope : ['public_profile', 'email']
 }));
@@ -191,83 +168,143 @@ app.get('/auth/facebook/callback',
 //         failureRedirect : '/login'
 // }));
 
+//---------------------------------------------------------------------------------------
+
+//This method will log the user out
 app.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
 });
 
-//post requests
+//---------------------------------------------------------------------------------------
+
+//--------------------POST requests----------------------------------------------------
+
+//This will post a bug report. Make sure to supply it a description, a Product Id, a Title, and a Post Type(Form or Function)
+//Also make sure that you are logged in.
 app.post("/bugreport", function(req, res){
-	var description;
-	var userId;
-	var productId;
-	var title;
-	var postType
-	if(req.body.title && req.body.bugDescription && req.body.productId && req.isAuthenticated() && req.body.postType){
-		title = req.body.title;
-		description = req.body.bugDescription;
-		productId = req.body.productId
-		postType = req.body.postType
-		userId = req.user["_id"];
-		dbMod.addBug(title, description, userId, productId, postType, function(bug){
-			res.send(bug)
-		});
-	} else{
-		res.status(500).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before posting a bug report!");
+		return;
 	}
-})
 
+	var userId = req.user._id;
+	var title = req.body.title;
+	var description = req.body.bugDescription;
+	var productId = req.body.productId;
+	var postType = req.body.postType;
+
+	if(!title){
+		res.status(400).send("Please send a title for the bug report!");
+		return;
+	}
+	if(!description){
+		res.status(400).send("Please send a description of the bug report!");
+		return;
+	}
+	if(!productId){
+		res.status(400).send("Please send a product ID corresponding to the bug report!");
+		return;
+	}
+	if(postType !== "form" && postType !== "function"){
+		res.status(400).send("Please either send 'form' or 'function' for postType!");
+		return;
+	}
+
+	dbMod.addBug(title, description, userId, productId, postType, function(err, bug){
+		if(err){
+			console.log(err.description);
+			res.status(500).send(err.description)
+		} else{
+			res.send(bug);
+		}
+	});
+});
+
+//THis will post a comment. Please make sure you are logged in and you supply a description and a Bug Id
 app.post("/comment", function(req, res){
-	var description;
-	var userId;
-	var bugId;
-	if(req.body.comment && req.body.bugId &&  req.isAuthenticated()){
-		description = req.body.comment;
-		userId = req.user["_id"];
-		bugId = req.body.bugId
-		dbMod.addComment(bugId, userId, description, function(comment){
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before posting a comment!");
+		return;
+	}
+	
+	var userId = req.user._id;
+	var description = req.body.comment;
+	var bugId = req.body.bugId;
+
+	if(!description){
+		res.status(400).send("Make sure you send the text of comment!");
+		return;
+	}
+
+	if(!bugId){
+		res.status(400).send("Please provide me with a Bug ID!");
+		return;
+	}
+
+	dbMod.addComment(bugId, userId, description, function(err, comment){
+		if(err){
+			console.log(err.description);
+			res.status(500).send(err.description);
+		} else{
 			res.send(comment);
-		})
-
-	} else{
-		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
-	}
+		}
+	})
 });
 
+//This will upvote a comment. Please make sure you are logged in and you supply a comment ID
 app.post("/upvote-comment", function(req, res){
-	var commentId;
-	var userId;
-	if(req.body.commentId && req.isAuthenticated()){
-		commentId = req.body.commentId;
-		userId = req.user["_id"];
-		dbMod.upvoteComment(userId, commentId, function(err, comment){
-			if(err)
-				res.status(500).send("There was an error: " + err.message);
-			else
-				res.send("Upvoted Comment")
-		})
-	} else{
-		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before upvoting a comment!");
+		return;
 	}
+
+	var userId = req.user._id;
+	var commentId = req.body.commentId;
+
+	if(!req.commentId){
+		res.status(400).send("Please provide me with a comment ID!");return;
+	}
+	
+	dbMod.upvoteComment(userId, commentId, function(err, comment){
+		if(err){
+			console.log(err.description);
+			res.status(500).send(err.description);
+		} else{
+			res.send("Successfully upvoted comment!");
+		}
+	});
 });
 
+//This will upvote a bug. Please make sure you are logged in and you supply a bugID
 app.post("/upvote-bug", function(req, res){
-	var bugId;
-	var userId;
-	if(req.body.bugId && req.isAuthenticated()){
-		bugId = req.body.bugId;
-		userId = req.user["_id"];
-		dbMod.upvoteBug(userId, bugId, function(err, bug){
-			if(err) 
-				res.status(500).send("There was an error: " + err.message);
-			else
-				res.send("Upvoted Bug Report");
-		})
-	} else{
-		res.status(400).send("I'm sorry, but you did not provide the proper details or you are not logged in");
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before upvoting a bug report!");
+		return;
 	}
+
+	var bugId = req.body.bugId;
+	var userId = req.user._id;
+
+	if(!bugId){
+		res.status(400).send("Please provide me with a bug ID");
+		return;
+	}
+
+	dbMod.upvoteBug(userId, bugId, function(err, bug){
+		if(err){
+			res.status(500).send(err.description);
+			console.log(err.description);
+		}
+		else{
+			res.send("Successfully upvoted bug report!")
+		}
+	});
 });
 
+//-----------------------------------------------------------------------------------------
+
+//Finally this will start the server
 app.listen(8080, function(){
 	console.log("server started")
 })

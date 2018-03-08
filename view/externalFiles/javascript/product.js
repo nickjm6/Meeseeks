@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	//Parses the URL to get the product name that is given
 	var getProductName = function(){
 		var url = window.location.href;
 		try{
@@ -19,6 +20,7 @@ $(document).ready(function(){
 		}
 	}
 
+	//Adds a post to the page
 	var addPost = function(post){
 		var postList = $("#postList");
 
@@ -53,6 +55,7 @@ $(document).ready(function(){
 		postLink.attr("href", "/post?bugId=" + post.id)
 	}
 
+	//Tries to submit a post to the backend
 	var submitPost = function(){
 		var title = $("input[name='title']").val();
 		var description = $("textarea[name='bugDescription']").val();
@@ -75,30 +78,16 @@ $(document).ready(function(){
 			$.get("/bugReport", {bugId: data}, function(bug){addPost(bug)});
 			$("#dismiss").click();
 		}).fail(function(err){
-			console.dir(err)
 			alert(err.responseText);
 		});
 	}
 
-	$("#postSubmit").click(function(){
-		submitPost();
-	})
-
+	//KO variable for the page
 	var app = {
 		productName: ko.observable(),
 		productId: ko.observable(),
 		formOrFunction: ko.observable()
 	}
-
-	$("#newBug").click(function(){
-		$("#buttonGroup > button").removeClass("active")
-	})
-
-	$("#buttonGroup > button").click(function(btn){
-		app.formOrFunction($(this).val());
-		$("#buttonGroup > button").removeClass("active");
-		$(this).addClass("active")
-	})
 
 	app.imageSource = ko.computed(function(){
 		return "/resources/phones/" + app.productName() + ".png"
@@ -109,18 +98,36 @@ $(document).ready(function(){
 	})
 
 	app.productName(getProductName());
+
 	$.get("/GetProductId", {productName: app.productName()}, function(data){
 		app.productId(data);
 		$.get("/bugreports", {productId: data}, function(bugReports){
 			bugReports.forEach(function(reportId){
-				$.get("/bugReport", {bugId: reportId}, function(report){addPost(report)})
+				$.get("/bugReport", {bugId: reportId}, function(report){addPost(report)}).fail(function(err){alert(err.responseText)})
 			})
 		}).fail(function(err){
-			alert("Cannot get bug reports")
-		})
+			alert(err.responseText)
+		});
 	}).fail(function(err){
-		alert("cannot get productId")
-	})
+		alert(err.responseText)
+	});
+
+	//resets form/function values when reopening the modal
+	$("#newBug").click(function(){
+		$("#buttonGroup > button").removeClass("active");
+	});
+
+	//sets form or function value based on which one was clicked last
+	$("#buttonGroup > button").click(function(btn){
+		app.formOrFunction($(this).val());
+		$("#buttonGroup > button").removeClass("active");
+		$(this).addClass("active")
+	});
+
+	//submits the form
+	$("#postSubmit").click(function(){
+		submitPost();
+	});
 
 	ko.applyBindings(app);
 });
