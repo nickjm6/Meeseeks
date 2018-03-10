@@ -1,23 +1,15 @@
 $(document).ready(function(){
-	//Parses the URL to get the product name that is given
-	var getProductName = function(){
-		var url = window.location.href;
-		try{
-			var query = url.split("?")[1];
-			var params = query.split("&")
-			for(var i = 0; i < params.length; i++){
-				var param = params[i];
-				var splitted = param.split("=");
-				var paramName = splitted[0];
-				var paramVal = splitted[1];
-				if(paramName == "productName")
-					return paramVal.replace("%20", " ");
-			}
-			return "";
-		} catch (err){
-			console.log(err);
-			return "";
-		}
+
+	//adds alert to the modal
+	var addPostAlert = function(msg, dontremove=true){
+		debugger;
+		removeAlerts();
+		var alert = $("<div class='alert alert-danger'>" + msg + "</div>");
+		if(dontremove)
+			alert.addClass("dontremoveyet");
+		else
+			alert.addClass("alert-dismissable")
+		$("#modalAlertDiv").append(alert)
 	}
 
 	//Adds a post to the page
@@ -56,29 +48,30 @@ $(document).ready(function(){
 	}
 
 	//Tries to submit a post to the backend
-	var submitPost = function(){
+	submitPost = function(){
 		var title = $("input[name='title']").val();
 		var description = $("textarea[name='bugDescription']").val();
 		var productId = app.productId();
 		var postType = $("#buttonGroup > button.active").val();
 		if(title === undefined || title === ""){
-			alert("Title is Required!")
+			addPostAlert("Title is Required!");
 			return;
 		}
 		if(description === undefined || description === ""){
-			alert("Description is Required!");
+			addPostAlert("Description is Required!");
 			return;
 		}
 		if(postType === undefined){
-			alert("Please specify either 'Form' or 'Function' for Post Type")
+			addPostAlert("Please specify either 'Form' or 'Function' for Post Type")
 			return;
 		}
 		$.post("/bugReport", 
 			{title: title, bugDescription: description, productId: productId,  postType: postType}, function(data){
 			$.get("/bugReport", {bugId: data}, function(bug){addPost(bug)});
 			$("#dismiss").click();
+			addAlert("Successfully added bug report!", "success");
 		}).fail(function(err){
-			alert(err.responseText);
+			addPostAlert(err.responseText, false);
 		});
 	}
 
@@ -97,19 +90,20 @@ $(document).ready(function(){
 		document.title = data;
 	})
 
-	app.productName(getProductName());
+	app.productName(getURLParam("productName"));
 
 	$.get("/GetProductId", {productName: app.productName()}, function(data){
 		app.productId(data);
 		$.get("/bugreports", {productId: data}, function(bugReports){
 			bugReports.forEach(function(reportId){
-				$.get("/bugReport", {bugId: reportId}, function(report){addPost(report)}).fail(function(err){alert(err.responseText)})
+				$.get("/bugReport", {bugId: reportId}, function(report){addPost(report)}).fail(function(err)
+					{addAlert(err.responseText, "danger", false)})
 			})
 		}).fail(function(err){
-			alert(err.responseText)
+			addAlert(err.responseText, "danger", false)
 		});
 	}).fail(function(err){
-		alert(err.responseText)
+		addAlert(err.responseText, "danger", false)
 	});
 
 	//resets form/function values when reopening the modal
@@ -124,7 +118,7 @@ $(document).ready(function(){
 		$(this).addClass("active")
 	});
 
-	//submits the form
+	// submits the form
 	$("#postSubmit").click(function(){
 		submitPost();
 	});

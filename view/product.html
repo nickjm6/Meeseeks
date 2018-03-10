@@ -15,6 +15,7 @@
     <script type='text/javascript' src='/javascript/knockout.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="javascript/bootstrap.min.js"></script>
+    <script src="javascript/common.js"></script>
     <script src="/javascript/product.js"></script>
 </head>
 
@@ -51,7 +52,8 @@
 
                 <form> 
                 <!--modal body-->
-                <div class="modal-body">                                    
+                <div class="modal-body">   
+                        <div class="container" id="modalAlertDiv" style="text-align: center;"></div>                                 
                         <div class="form-group">
                             <input type="text" name="title" class="form-control" placeholder="Add a descriptive title">
                         </div>
@@ -86,6 +88,7 @@
     </div>
 
     <div class="container">
+
         <div class="row">
             <!--Product Image-->
             <div class="col-md-3">
@@ -97,7 +100,8 @@
                 <div class="card">
 
                     <!--Column header-->
-                    <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div>
+                    <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div><br>
+                    <div class="container" id="alertDiv" style="text-align: center;"></div>
 
                     <!--button to open modal to make new post-->
                     <div class="list-group-item">
@@ -107,24 +111,6 @@
                     <!--First post-->
                     <div class="card-block">
                         <div class="list-group" id="postList">
-
-                            <!-- <a class="list-group-item list-group-item-action">
-                                <small>5 months ago</small>
-                                <h3 class="mb-0">No audio jack</h3>
-                                <span class="badge badge-warning">Form</span>
-                                <small class="font-weight-bold text-secondary">@audiophile75</small>
-                                <div class="row">
-                                        <div class="col-xl-1 text-center">
-                                            <p>&#9650;</p>
-                                        <p>10.9k</p>
-                                        <p>&#9660;</p>
-                                    </div>
-                                    <div class="col-xl-11">
-                                        <p>This model seems to have been designed without a place to plug in my shitty headphones. Even though the audio jack has caused me great pain my entire life, I'm going to defend it to my grave because I'm afraid of change. The outdated design of this part often causes one of the audio channels to cut out so I have to constantly hold the headphone jack to one side but fuck logic! Anyone who disagrees with me is an idiot and a pagan.</p>
-                                    </div>
-                                </div>
-                                <div class="alert alert-info">2.3k Comments</div>
-                            </a> -->
                         </div>
                     </div>
 

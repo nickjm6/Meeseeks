@@ -1,26 +1,11 @@
 $(document).ready(function(){
-	//parses the URL to get the URL
-	var getBugId = function(){
-		var url = window.location.href;
-		try{
-			var query = url.split("?")[1];
-			var params = query.split("&")
-			for(var i = 0; i < params.length; i++){
-				var param = params[i];
-				var splitted = param.split("=");
-				var paramName = splitted[0];
-				var paramVal = splitted[1];
-				if(paramName == "bugId")
-					return paramVal;
-			}
-			return "";
-		} catch (err){
-			console.log(err);
-			return "";
-		}
+	//Adds a comment to the list of comments
+	var addAlertDontRemove = function(msg){
+		removeAlerts();
+		var alert = $("<div class='alert alert-danger dontremoveyet'>" + msg + "</div>");
+		$("#alertDiv").append(alert);
 	}
 
-	//Adds a comment to the list of comments
 	var addComment = function(comment){
 		var list = $("#postList");
 		var listItem = $("<li class='list-group-item'></li>");
@@ -55,7 +40,7 @@ $(document).ready(function(){
 		app.imageSource("/resources/phones/" + app.productName() + ".png");
 	})
 
-	app.bugId(getBugId());
+	app.bugId(getURLParam("bugId"));
 
 	//Gets info on the bug report
 	$.get("/bugReport", {bugId: app.bugId()}, function(bug){
@@ -72,7 +57,7 @@ $(document).ready(function(){
 		app.upvotes(bug.upvotes);
 		app.howLongAgo(bug.timeSince);
 	}).fail(function(err){
-		alert(err.responseText);
+		addAlert(err.responseText, "danger", false);
 	});
 
 	$.get("/comments", {bugId: app.bugId}, function(comments){
@@ -80,20 +65,29 @@ $(document).ready(function(){
 			$.get("/comment", {commentId: commentId}, function(comment){
 				addComment(comment);
 			}).fail(function(err){
-				alert(err.responseText)
+				addAlert(err.responseText, "danger", false)
 			});
 		});
 	}).fail(function(err){
-		alert(err.responseText);
+		addAlert(err.responseText, "danger", false);
 	});
 
 	$("#submitComment").click(function(){
 		var description = $("#commentDescription").val();
+		if(description == undefined || description === ""){
+			addAlertDontRemove("Comment text is required", "danger");
+			return;
+		}
 		$.post("/comment", {comment: description, bugId: app.bugId()}, function(response){
-			$.get("/comment", {commentId: response}, function(comment){addComment(comment);})
+			$.get("/comment", {commentId: response}, function(comment){
+				addComment(comment);
+				addAlert("Successfully added comment!", "success")
+			}).fail(function(err){
+				addAlert(err.responseText, "danger", false)
+			})
 		}).fail(function(err){
 			console.log(err);
-			alert(err.responseText)
+			addAlert(err.responseText, "danger")
 		})
 	});
 

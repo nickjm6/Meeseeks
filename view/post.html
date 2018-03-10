@@ -15,6 +15,7 @@
     <script type='text/javascript' src='/javascript/knockout.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="javascript/bootstrap.min.js"></script>
+    <script src="javascript/common.js"></script>
     <script src="/javascript/post.js"></script>
 
     <!-- Bootstrap CSS -->
@@ -44,7 +45,6 @@
 
     <!--middle content-->
     <div class="container">
-
         <div class="row">
             <!--product image-->
             <div class="col-xl-3">
@@ -56,7 +56,8 @@
                 <div class="card">
 
                     <a data-bind="attr: {href: productPath}">
-                        <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div></a>
+                        <div class="card-header bg-primary text-light"><h2 data-bind="text: productName"></h2></div></a><br>
+                     <div class="container" id="alertDiv" style="text-align: center;"></div>
                     
                     <div class="card-block">
                         <ul class="list-group" id="postList">
