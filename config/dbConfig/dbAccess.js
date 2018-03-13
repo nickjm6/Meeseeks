@@ -72,23 +72,29 @@ var getBug = function(bugId, done){
 					if(err2) return done(err2)
 					getProductById(bug.product_id, function(err3, productName){
 						if(err3) return done(err3);
-						var numComments = comments.length
-						var commentText;
-						if(numComments === 1)
-							commentText = "1 Comment";
-						else
-							commentText = numComments + " Comments";
-						return done(null, {
-							id: bug._id,
-							title: bug.title,
-							description: bug.description,
-							product: productName,
-							post_type: bug.post_type,
-							username: " @" + username,
-							comments: commentText,
-							upvotes: bug.upvotes,
-							timeSince: getTimeSince(bug._id) + " Ago"
-						});
+						hasUpvotedBug(bug.user_id, bugId, function(err4, hasUpvoted){
+							if(err4) return done(err4);
+							var numComments = comments.length
+							var commentText;
+							if(numComments === 1)
+								commentText = "1 Comment";
+							else
+								commentText = numComments + " Comments";
+							if(bug.upvotes === 1) upvoteText = "1 Upvote";
+							else upvoteText = bug.upvotes + " Upvotes";
+							return done(null, {
+								id: bug._id,
+								title: bug.title,
+								description: bug.description,
+								product: productName,
+								post_type: bug.post_type,
+								username: " @" + username,
+								comments: commentText,
+								upvotes: upvoteText,
+								timeSince: getTimeSince(bug._id) + " Ago",
+								hasUpvoted: hasUpvoted
+							});
+						})
 					})
 				})
 			})
@@ -105,11 +111,18 @@ var getComment = function(commentId, done){
 		if(comment){
 			getUser(comment.user_id, function(err1, username){
 				if(err1) return done(err1);
-				return done(null, {
-					commentText: comment.comment,
-					username: " @" + username,
-					timeSince: getTimeSince(comment._id) + " Ago",
-					upvotes: comment.upvotes
+				hasUpvotedComment(comment.user_id, commentId, function(err2, hasUpvoted){
+					var upvoteText;
+					if(comment.upvotes === 1) upvoteText = "1 Upvote";
+					else upvoteText = comment.upvotes + " Upvotes";
+					return done(null, {
+						id: comment._id,
+						commentText: comment.comment,
+						username: " @" + username,
+						timeSince: getTimeSince(comment._id) + " Ago",
+						upvotes: upvoteText,
+						hasUpvoted: hasUpvoted
+					});
 				});
 			})
 		} else{
@@ -124,6 +137,22 @@ var getUser = function(userId, done){
 		if(err) return done(err);
 		if(user) return done(null, user.name)
 		else return done(new Error("User does not exist"))
+	})
+}
+
+var hasUpvotedBug = function(userId, bugId, done){
+	User.findOne({_id: userId}, function(err, user){
+		if(err) return done(err);
+		if(user) return done(null, user.upvoted_bugs.includes(bugId));
+		else return done(new Error("User Does not exist"));
+	})
+}
+
+var hasUpvotedComment = function(userId, commentId, done){
+	User.findOne({_id: userId}, function(err, user){
+		if(err) return done(err);
+		if(user) return done(null, user.upvoted_comments.includes(commentId));
+		else return done(new Error("User Does not exist"));
 	})
 }
 

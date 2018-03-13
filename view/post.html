@@ -69,16 +69,18 @@
                                 <span class="badge" id="postTypeBadge"></span>
                                 <small class="font-weight-bold text-secondary" data-bind="text: posterName"></small>
                                 <div class="row">
-                                    <div class="col-xl-1 text-center">
+                                    <!-- <div class="col-xl-1 text-center">
                                         <p>&#9650;</p>
                                         <p data-bind="text: upvotes"></p>
                                         <p>&#9660;</p>
-                                    </div>
+                                    </div> -->
                                     <div class="col-xl-11">
                                         <p data-bind="text: bugDescription"></p>
                                         <!-- <video src="resources/post-video.mp4" controls></video> -->
+                                        <div class="alert alert-info" data-bind="text: upvotes"></div>
                                     </div>
                                 </div>
+                                <div class="row"><button id="upvoteButton" data-bind="text: upvoteText" class="btn"></button></div>
                             </li>
 
                             <!--buttons for changing the type of comment you're viewing-->

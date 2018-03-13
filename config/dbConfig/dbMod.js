@@ -48,7 +48,9 @@ var upvoteBug = function(userID, bugID, done){
 						user.upvoted_bugs.push(bugID);
 						user.save(function(e1){
 							if(e1) return done(e1);
-							return done(null, bug);
+							if(bug.upvotes === 1) response = "1 Upvote";
+							else response = bug.upvotes + " Upvotes"
+							return done(null, response);
 						});
 					});
 				} else{
@@ -75,10 +77,13 @@ var upvoteComment = function(userID, commentID, done){
 					comment.upvotes++;
 					comment.save(function(e){
 						if(e) return done(e);
-						user.upvoted_bugs.push(commentID);
+						user.upvoted_comments.push(commentID);
 						user.save(function(e1){
 							if(e1) return done(e1);
-							return done(null, comment);
+							var response;
+							if(comment.upvotes === 1) response = "1 Upvote";
+							else response = comment.upvotes + " Upvotes"
+							return done(null, response);
 						})
 					})
 				}
@@ -92,9 +97,70 @@ var upvoteComment = function(userID, commentID, done){
 	});
 }
 
+var removeUpvotedBug = function(userId, bugId, done){
+	User.findOne({_id: userId}, function(err, user){
+		if(err) return done(err)
+		if(user){
+			if(user.upvoted_bugs.includes(bugId)){
+				user.upvoted_bugs = user.upvoted_bugs.filter(id => id!=bugId)
+				BugReport.findOne({_id: bugId}, function(err1, bug){
+					if(err) return done(err);
+					if(bug){
+						user.save(function(e){
+							if(e) return done(e);
+							bug.upvotes--;
+							bug.save(function(e1){
+								if(e1) return done(e1);
+								var response;
+								if(bug.upvotes === 1)
+									response = "1 Upvote";
+								else
+									response = bug.upvotes + " Upvotes";
+								return done(null, response);
+							})
+						})
+					} else return done(new Error("Bug does not exist"));
+				})
+			} else return done(new Error("User has not upvoted this"))
+		} else return done(new Error("User does not exist"));
+	}) 
+}
+
+var removeUpvotedComment = function(userId, commentId, done){
+	User.findOne({_id: userId}, function(err, user){
+		if(err) return done(err)
+		if(user){
+			if(user.upvoted_comments.includes(commentId)){
+				user.upvoted_comments = user.upvoted_comments.filter(id => id!=commentId)
+				Comment.findOne({_id: commentId}, function(err1, comment){
+					if(err) return done(err);
+					if(comment){
+						user.save(function(e){
+							if(e) return done(e);
+							comment.upvotes--;
+							comment.save(function(e1){
+								if(e1) return done(e1);
+								var response;
+								if(comment.upvotes === 1)
+									response = "1 Upvote";
+								else
+									response = comment.upvotes + " Upvotes";
+								return done(null, response);
+							})
+						})
+					} else return done(new Error("Comment does not exist"));
+				})
+			} else return done(new Error("User has not upvoted this"))
+		} else return done(new Error("User does not exist"));
+	}) 
+}
+
+
 module.exports = {
 	addBug: addBug,
 	addComment: addComment,
 	upvoteBug: upvoteBug,
-	upvoteComment: upvoteComment
+	upvoteComment: upvoteComment,
+	removeUpvotedComment: removeUpvotedComment,
+	removeUpvotedBug: removeUpvotedBug
 }

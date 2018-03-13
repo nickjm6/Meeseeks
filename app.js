@@ -244,7 +244,6 @@ app.post("/comment", function(req, res){
 
 	dbMod.addComment(bugId, userId, description, function(err, comment){
 		if(err){
-			console.log(err.description);
 			res.status(500).send(err.description);
 		} else{
 			res.send(comment);
@@ -262,16 +261,15 @@ app.post("/upvote-comment", function(req, res){
 	var userId = req.user._id;
 	var commentId = req.body.commentId;
 
-	if(!req.commentId){
+	if(!commentId){
 		res.status(400).send("Please provide me with a comment ID!");return;
 	}
 	
-	dbMod.upvoteComment(userId, commentId, function(err, comment){
+	dbMod.upvoteComment(userId, commentId, function(err, response){
 		if(err){
-			console.log(err.description);
-			res.status(500).send(err.description);
+			res.status(500).send(err.message);
 		} else{
-			res.send("Successfully upvoted comment!");
+			res.send(response);
 		}
 	});
 });
@@ -291,16 +289,55 @@ app.post("/upvote-bug", function(req, res){
 		return;
 	}
 
-	dbMod.upvoteBug(userId, bugId, function(err, bug){
+	dbMod.upvoteBug(userId, bugId, function(err, response){
 		if(err){
-			res.status(500).send(err.description);
-			console.log(err.description);
+			res.status(500).send(err.message);
 		}
 		else{
-			res.send("Successfully upvoted bug report!")
+			res.send(response)
 		}
 	});
 });
+
+app.post("/remove-upvote-bug", function(req, res){
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before trying to remove an upvote!")
+		return;
+	}
+
+	var bugId = req.body.bugId;
+	var userId = req.user._id;
+
+	if(!bugId){
+		res.status(400).send("Please provide me with a bug ID");
+		return;
+	}
+
+	dbMod.removeUpvotedBug(userId, bugId, function(err, response){
+		if(err) res.status(500).send(err.message);
+		else res.send(response);
+	})
+});
+
+app.post("/remove-upvote-comment", function(req, res){
+	if(!req.isAuthenticated()){
+		res.status(400).send("Please log in before trying to remove an upvote!")
+		return;
+	}
+
+	var commentId = req.body.commentId;
+	var userId = req.user._id;
+
+	if(!commentId){
+		res.status(400).send("Please provide me with a bug ID");
+		return;
+	}
+
+	dbMod.removeUpvotedComment(userId, commentId, function(err, response){
+		if(err) res.status(500).send(err.message);
+		else res.send(response);
+	})
+})
 
 //-----------------------------------------------------------------------------------------
 
