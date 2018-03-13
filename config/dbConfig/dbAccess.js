@@ -6,7 +6,7 @@ var mongoose = require("mongoose");
 
 //returns a list of IDs of comments for a bug report based on the bug id that is given
 var getComments = function(bugId, done){
-	Comment.find({"bug_id": bugId}).sort({"upvotes": -1}).exec(function(err, comments){
+	Comment.find({"bug_id": bugId}).sort({"upvotes": 1}).exec(function(err, comments){
 		if(err)
 			return done(err);
 		var res = []
@@ -19,7 +19,7 @@ var getComments = function(bugId, done){
 
 //returns a list of IDs of bug reports for a product based on the product id that is given
 var getBugReports = function(productId, done){
-	Bug.find({"product_id": productId}).sort({"upvotes": -1}).exec(function(err, bugs){
+	Bug.find({"product_id": productId}).sort({"upvotes": 1}).exec(function(err, bugs){
 		if(err)
 			return done(err);
 		var res = [];
