@@ -80,7 +80,7 @@
                                         <div class="alert alert-info" data-bind="text: upvotes"></div>
                                     </div>
                                 </div>
-                                <div class="row"><button id="upvoteButton" data-bind="text: upvoteText" class="btn"></button></div>
+                                <div class="row" data-bind="visible: isLoggedIn"><button id="upvoteButton" data-bind="text: upvoteText" class="btn"></button></div>
                             </li>
 
                             <!--buttons for changing the type of comment you're viewing-->
@@ -95,7 +95,7 @@
                             <!--New Comment Form-->
                             <li class="list-group-item">
                                 <form>
-                                    <div class="form-group">
+                                    <div class="form-group" data-bind="visible: isLoggedIn">
                                         <label>New Comment</label>
                                         <textarea class="form-control" id="commentDescription"></textarea>
                                         <br>

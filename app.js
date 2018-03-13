@@ -102,8 +102,9 @@ app.get("/bugReports", function(req, res){
 
 //This will return crucial info about a bug report based on the id you give it
 app.get("/bugReport", function(req, res){
+	var userId = req.user ? req.user._id : undefined;
 	if(req.query.bugId){
-		dbAccess.getBug(req.query.bugId, function(err, bug){
+		dbAccess.getBug(req.query.bugId, userId, function(err, bug){
 			if(err)
 				res.status(500).send(err.message);
 			else
@@ -134,8 +135,9 @@ app.get("/comments", function(req, res){
 
 //Returns crucial info about a comment based on the comment ID that is given
 app.get("/comment", function(req, res){
+	var userId = req.user ? req.user._id : undefined;
 	if(req.query.commentId){
-		dbAccess.getComment(req.query.commentId, function(err, comment){
+		dbAccess.getComment(req.query.commentId, userId, function(err, comment){
 			if(err) res.status(500).send(err.message);
 			else res.send(comment);
 		})

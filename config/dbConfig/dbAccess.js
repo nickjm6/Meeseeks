@@ -62,7 +62,7 @@ var getProducts = function(done){
 }
 
 //Returns crucial info for a bug report based on the Bug ID that is given
-var getBug = function(bugId, done){
+var getBug = function(bugId, userId, done){
 	Bug.findOne({"_id": bugId}, function(err, bug){
 		if(err) return done(err);
 		if(bug){
@@ -72,7 +72,7 @@ var getBug = function(bugId, done){
 					if(err2) return done(err2)
 					getProductById(bug.product_id, function(err3, productName){
 						if(err3) return done(err3);
-						hasUpvotedBug(bug.user_id, bugId, function(err4, hasUpvoted){
+						hasUpvotedBug(userId, bugId, function(err4, hasUpvoted){
 							if(err4) return done(err4);
 							var numComments = comments.length
 							var commentText;
@@ -105,13 +105,13 @@ var getBug = function(bugId, done){
 }
 
 //Gets crucial information about a comment
-var getComment = function(commentId, done){
+var getComment = function(commentId, userId, done){
 	Comment.findOne({"_id": commentId}, function(err, comment){
 		if(err) return done(err);
 		if(comment){
 			getUser(comment.user_id, function(err1, username){
 				if(err1) return done(err1);
-				hasUpvotedComment(comment.user_id, commentId, function(err2, hasUpvoted){
+				hasUpvotedComment(userId, commentId, function(err2, hasUpvoted){
 					var upvoteText;
 					if(comment.upvotes === 1) upvoteText = "1 Upvote";
 					else upvoteText = comment.upvotes + " Upvotes";
@@ -136,23 +136,27 @@ var getUser = function(userId, done){
 	User.findOne({_id: userId}, function(err, user){
 		if(err) return done(err);
 		if(user) return done(null, user.name)
-		else return done(new Error("User does not exist"))
+		else return done(new Error("User does not exist!"))
 	})
 }
 
 var hasUpvotedBug = function(userId, bugId, done){
+	if(!userId)
+		return done(null, false)
 	User.findOne({_id: userId}, function(err, user){
 		if(err) return done(err);
 		if(user) return done(null, user.upvoted_bugs.includes(bugId));
-		else return done(new Error("User Does not exist"));
+		else return done(new Error("User Does not exist!!"));
 	})
 }
 
 var hasUpvotedComment = function(userId, commentId, done){
+	if(!userId)
+		return done(null, false);
 	User.findOne({_id: userId}, function(err, user){
 		if(err) return done(err);
 		if(user) return done(null, user.upvoted_comments.includes(commentId));
-		else return done(new Error("User Does not exist"));
+		else return done(new Error("User Does not exist!!!"));
 	})
 }
 

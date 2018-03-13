@@ -10,7 +10,8 @@ $(document).ready(function(){
 		upvotes: ko.observable(),
 		bugDescription: ko.observable(),
 		hasUpvotedBug: ko.observable(),
-		upvoteText: ko.observable()
+		upvoteText: ko.observable(),
+		isLoggedIn: ko.observable()
 	};
 
 	//Adds a comment to the list of comments
@@ -73,7 +74,8 @@ $(document).ready(function(){
 		listItem.append(username);
 		listItem.append(commentText);
 		listItem.append(upvotes);
-		listItem.append(upvoteButton)
+		if(app.isLoggedIn())
+			listItem.append(upvoteButton)
 	}
 
 	var removeUpvoteBug = function(){
@@ -146,6 +148,8 @@ $(document).ready(function(){
 	}).fail(function(err){
 		addAlert(err.responseText, "danger", false);
 	});
+
+	$.get("/isLoggedIn", function(result){app.isLoggedIn(result)}).fail(function(err){app.isLoggedIn(false)});
 
 	$("#submitComment").click(function(){
 		var description = $("#commentDescription").val();

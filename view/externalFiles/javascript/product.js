@@ -29,6 +29,7 @@ $(document).ready(function(){
 		var upvotes = $("<span>" + post.upvotes + "</span>");
 		var upvoteSection = $("<div class='list-group-item'></div>");
 		var upvoteButton = $("<button class='btn'></button>");
+
 		if(post.hasUpvoted){
 			upvoteButton.addClass("btn-danger");
 			upvoteButton.text("Remove Upvote");
@@ -55,7 +56,8 @@ $(document).ready(function(){
 		commentsAndUpvotes.append(upvotes);
 		postLink.append(commentsAndUpvotes);
 		upvoteSection.append(upvoteButton);
-		postList.prepend(upvoteSection)
+		if(app.isLoggedIn())
+			postList.prepend(upvoteSection)
 		postList.prepend(postLink)
 
 		postLink.attr("href", "/post?bugId=" + post.id)
@@ -124,7 +126,8 @@ $(document).ready(function(){
 	var app = {
 		productName: ko.observable(),
 		productId: ko.observable(),
-		formOrFunction: ko.observable()
+		formOrFunction: ko.observable(),
+		isLoggedIn: ko.observable()
 	}
 
 	app.imageSource = ko.computed(function(){
@@ -150,6 +153,10 @@ $(document).ready(function(){
 	}).fail(function(err){
 		addAlert(err.responseText, "danger", false)
 	});
+
+	$.get("/isLoggedIn", function(result){
+		app.isLoggedIn(result);
+	}).fail(function(err){app.isLoggedIn(false)})
 
 	//resets form/function values when reopening the modal
 	$("#newBug").click(function(){

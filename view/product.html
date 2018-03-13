@@ -104,7 +104,7 @@
                     <div class="container" id="alertDiv" style="text-align: center;"></div>
 
                     <!--button to open modal to make new post-->
-                    <div class="list-group-item">
+                    <div data-bind='visible: isLoggedIn' class="list-group-item">
                         <button type="button" id="newBug" class="btn btn-success" data-toggle="modal" data-target="#newBugFormModal">Submit a new bug</button>
                     </div>
 
