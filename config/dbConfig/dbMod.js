@@ -3,6 +3,7 @@ var BugReport = require("./Models/BugReport")
 var Product = require("./Models/Product")
 var Comment = require("./Models/Comment")
 var mongoose = require("mongoose")
+var Upvote = require("./Models/Upvote")
 
 //Adds a bug to the database
 var addBug = function(title, description, userId, productId, postType, done){
@@ -12,7 +13,6 @@ var addBug = function(title, description, userId, productId, postType, done){
 	newBugReport.user_id = userId;
 	newBugReport.product_id = productId;
 	newBugReport.post_type = postType;
-	newBugReport.upvotes = 0;
 	newBugReport.save(function(err) {
         if (err) return done(err)
         return done(null, newBugReport._id)
@@ -25,142 +25,45 @@ var addComment = function(bugId, userId, comment, done){
 	newComment.comment = comment;
 	newComment.user_id = userId;
 	newComment.bug_id = bugId;
-	newComment.upvotes = 0;
 	newComment.save(function(err){
 		if(err) return done(err);
 		return done(null, newComment._id)
 	})
 }
 
-//upvotes a bug, checking to see if the user has already upvoted this bug
-var upvoteBug = function(userID, bugID, done){
-	User.findOne({_id: userID}, function(err, user){
+var upvote = function(userId, postId, postType, done){
+	if(postType != "bug" && postType != "comment")
+		return done(new Error("That is not a valid post type"));
+	var postDB = postType == "bug" ? BugReport : Comment
+	User.findOne({_id: userId}, function(err, user){
 		if(err) return done(err);
-		if(user){
-			if(user.upvoted_bugs.includes(bugID))
-				return done(new Error("You have already upvoted this"))
-			BugReport.findOne({_id: bugID}, function(err1, bug){
-				if(err1) return done(err1);
-				if(bug){
-					bug.upvotes++;
-					bug.save(function(e){
-						if(e) return done(e);
-						user.upvoted_bugs.push(bugID);
-						user.save(function(e1){
-							if(e1) return done(e1);
-							if(bug.upvotes === 1) response = "1 Upvote";
-							else response = bug.upvotes + " Upvotes"
-							return done(null, response);
-						});
-					});
-				} else{
-					return done(new Error("Bug Report does not exist"));
-				}
-			});
-		}
-		else{
-			return done(new Error("User does not exist"));
-		}
+		if(!user) return done(new Error("That is not a valid user"));
+		postDB.findOne({_id: postId}, function(err1, post){
+			if(err1) return done(err1);
+			if(!post) return done(new Error("That is not a valid " + postType));
+			Upvote.findOne({post_id: postId, user_id: userId}, function(err2, upvote){
+				if(err2) return done(err2);
+				if(upvote) return done(new Error("This user has already upvoted this post"));
+				var newUpvote = new Upvote({_id: mongoose.Types.ObjectId(), post_id: postId, user_id: userId})
+				newUpvote.save(function(errSave){
+					if(errSave) return done(err);
+					return done(null);
+				})
+			})
+		})
+	})
+}
+
+var removeUpvote = function(userId, postId, done){
+	Upvote.remove({post_id, postId, user_id: userId}, function(err){
+		if (err) return done(err);
+		return done(null);
 	});
 }
-
-//Upvotes a comment
-var upvoteComment = function(userID, commentID, done){
-	User.findOne({_id: userID}, function(err, user){
-		if(err) return done(err);
-		if(user){
-			if(user.upvoted_comments.includes(commentID))
-				return done(new Error("You have already upvoted this"))
-			Comment.findOne({_id: commentID}, function(err1, comment){
-				if(err1) return done(err1);
-				if(comment){
-					comment.upvotes++;
-					comment.save(function(e){
-						if(e) return done(e);
-						user.upvoted_comments.push(commentID);
-						user.save(function(e1){
-							if(e1) return done(e1);
-							var response;
-							if(comment.upvotes === 1) response = "1 Upvote";
-							else response = comment.upvotes + " Upvotes"
-							return done(null, response);
-						})
-					})
-				}
-				else{
-					return done(new Error("Comment does not exist"));
-				}
-			});
-		} else{
-			return done(new Error("User does not exist"));
-		}
-	});
-}
-
-var removeUpvotedBug = function(userId, bugId, done){
-	User.findOne({_id: userId}, function(err, user){
-		if(err) return done(err)
-		if(user){
-			if(user.upvoted_bugs.includes(bugId)){
-				user.upvoted_bugs = user.upvoted_bugs.filter(id => id!=bugId)
-				BugReport.findOne({_id: bugId}, function(err1, bug){
-					if(err) return done(err);
-					if(bug){
-						user.save(function(e){
-							if(e) return done(e);
-							bug.upvotes--;
-							bug.save(function(e1){
-								if(e1) return done(e1);
-								var response;
-								if(bug.upvotes === 1)
-									response = "1 Upvote";
-								else
-									response = bug.upvotes + " Upvotes";
-								return done(null, response);
-							})
-						})
-					} else return done(new Error("Bug does not exist"));
-				})
-			} else return done(new Error("User has not upvoted this"))
-		} else return done(new Error("User does not exist"));
-	}) 
-}
-
-var removeUpvotedComment = function(userId, commentId, done){
-	User.findOne({_id: userId}, function(err, user){
-		if(err) return done(err)
-		if(user){
-			if(user.upvoted_comments.includes(commentId)){
-				user.upvoted_comments = user.upvoted_comments.filter(id => id!=commentId)
-				Comment.findOne({_id: commentId}, function(err1, comment){
-					if(err) return done(err);
-					if(comment){
-						user.save(function(e){
-							if(e) return done(e);
-							comment.upvotes--;
-							comment.save(function(e1){
-								if(e1) return done(e1);
-								var response;
-								if(comment.upvotes === 1)
-									response = "1 Upvote";
-								else
-									response = comment.upvotes + " Upvotes";
-								return done(null, response);
-							})
-						})
-					} else return done(new Error("Comment does not exist"));
-				})
-			} else return done(new Error("User has not upvoted this"))
-		} else return done(new Error("User does not exist"));
-	}) 
-}
-
 
 module.exports = {
 	addBug: addBug,
 	addComment: addComment,
-	upvoteBug: upvoteBug,
-	upvoteComment: upvoteComment,
-	removeUpvotedComment: removeUpvotedComment,
-	removeUpvotedBug: removeUpvotedBug
+	upvote: upvote,
+	removeUpvote: removeUpvote
 }

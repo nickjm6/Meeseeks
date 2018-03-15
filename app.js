@@ -254,20 +254,21 @@ app.post("/comment", function(req, res){
 });
 
 //This will upvote a comment. Please make sure you are logged in and you supply a comment ID
-app.post("/upvote-comment", function(req, res){
+app.post("/upvote-post", function(req, res){
 	if(!req.isAuthenticated()){
 		res.status(400).send("Please log in before upvoting a comment!");
 		return;
 	}
 
 	var userId = req.user._id;
-	var commentId = req.body.commentId;
+	var postId = req.body.postId;
 
-	if(!commentId){
-		res.status(400).send("Please provide me with a comment ID!");return;
+	if(!postId){
+		res.status(400).send("Please provide me with a post ID!");
+		return;
 	}
 	
-	dbMod.upvoteComment(userId, commentId, function(err, response){
+	dbMod.upvote(userId, postId, function(err, response){
 		if(err){
 			res.status(500).send(err.message);
 		} else{
@@ -276,70 +277,25 @@ app.post("/upvote-comment", function(req, res){
 	});
 });
 
-//This will upvote a bug. Please make sure you are logged in and you supply a bugID
-app.post("/upvote-bug", function(req, res){
+app.post("/remove-upvote-post", function(req, res){
 	if(!req.isAuthenticated()){
-		res.status(400).send("Please log in before upvoting a bug report!");
+		res.status(400).send("Please log in before trying to remove an upvote!")
 		return;
 	}
 
-	var bugId = req.body.bugId;
+	var postId = req.body.postId;
 	var userId = req.user._id;
 
-	if(!bugId){
-		res.status(400).send("Please provide me with a bug ID");
+	if(!postId){
+		res.status(400).send("Please provide me with a post ID");
 		return;
 	}
 
-	dbMod.upvoteBug(userId, bugId, function(err, response){
-		if(err){
-			res.status(500).send(err.message);
-		}
-		else{
-			res.send(response)
-		}
+	dbMod.removeUpvote(userId, postId, function(err, response){
+		if(err) res.status(500).send(err.message);
+		else res.send(response);
 	});
 });
-
-app.post("/remove-upvote-bug", function(req, res){
-	if(!req.isAuthenticated()){
-		res.status(400).send("Please log in before trying to remove an upvote!")
-		return;
-	}
-
-	var bugId = req.body.bugId;
-	var userId = req.user._id;
-
-	if(!bugId){
-		res.status(400).send("Please provide me with a bug ID");
-		return;
-	}
-
-	dbMod.removeUpvotedBug(userId, bugId, function(err, response){
-		if(err) res.status(500).send(err.message);
-		else res.send(response);
-	})
-});
-
-app.post("/remove-upvote-comment", function(req, res){
-	if(!req.isAuthenticated()){
-		res.status(400).send("Please log in before trying to remove an upvote!")
-		return;
-	}
-
-	var commentId = req.body.commentId;
-	var userId = req.user._id;
-
-	if(!commentId){
-		res.status(400).send("Please provide me with a bug ID");
-		return;
-	}
-
-	dbMod.removeUpvotedComment(userId, commentId, function(err, response){
-		if(err) res.status(500).send(err.message);
-		else res.send(response);
-	})
-})
 
 //-----------------------------------------------------------------------------------------
 

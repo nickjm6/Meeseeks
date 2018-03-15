@@ -6,7 +6,6 @@ var bugSchema = mongoose.Schema({
 	product_id: String,
 	post_type: String,
 	user_id: String,
-	upvotes: Number
 })
 
 module.exports = mongoose.model("Bug", bugSchema);

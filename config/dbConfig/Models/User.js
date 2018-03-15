@@ -5,8 +5,6 @@ var userSchema = mongoose.Schema({
     token : String,
     name : String,
     email: String,
-    upvoted_bugs: Array,
-    upvoted_comments: Array
 });
 
 module.exports = mongoose.model('User', userSchema);

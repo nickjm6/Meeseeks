@@ -3,6 +3,7 @@ var Bug = require("./Models/BugReport");
 var Product = require("./Models/Product");
 var User = require("./Models/User");
 var mongoose = require("mongoose");
+var Upvote = require("./Models/Upvote");
 
 //returns a list of IDs of comments for a bug report based on the bug id that is given
 var getComments = function(bugId, done){
@@ -72,27 +73,22 @@ var getBug = function(bugId, userId, done){
 					if(err2) return done(err2)
 					getProductById(bug.product_id, function(err3, productName){
 						if(err3) return done(err3);
-						hasUpvotedBug(userId, bugId, function(err4, hasUpvoted){
-							if(err4) return done(err4);
-							var numComments = comments.length
-							var commentText;
-							if(numComments === 1)
-								commentText = "1 Comment";
-							else
-								commentText = numComments + " Comments";
-							if(bug.upvotes === 1) upvoteText = "1 Upvote";
-							else upvoteText = bug.upvotes + " Upvotes";
-							return done(null, {
-								id: bug._id,
-								title: bug.title,
-								description: bug.description,
-								product: productName,
-								post_type: bug.post_type,
-								username: " @" + username,
-								comments: commentText,
-								upvotes: upvoteText,
-								timeSince: getTimeSince(bug._id) + " Ago",
-								hasUpvoted: hasUpvoted
+						hasUpvotedPost(userId, bugId, function(err4, hasUpvoted){
+							if(err4) return done(err4)
+							getNumUpvotes(bugId, function(err5, numUpvotes){
+								if(err5) return done(err5);
+								return done(null, {
+									id: bug._id,
+									title: bug.title,
+									description: bug.description,
+									product: productName,
+									post_type: bug.post_type,
+									username: username,
+									comments: comments.length,
+									upvotes: numUpvotes,
+									timeSince: getTimeSince(bug._id) + " Ago",
+									hasUpvoted: hasUpvoted
+								});
 							});
 						})
 					})
@@ -111,7 +107,7 @@ var getComment = function(commentId, userId, done){
 		if(comment){
 			getUser(comment.user_id, function(err1, username){
 				if(err1) return done(err1);
-				hasUpvotedComment(userId, commentId, function(err2, hasUpvoted){
+				hasUpvotedPost(userId, commentId, function(err2, hasUpvoted){
 					var upvoteText;
 					if(comment.upvotes === 1) upvoteText = "1 Upvote";
 					else upvoteText = comment.upvotes + " Upvotes";
@@ -140,23 +136,13 @@ var getUser = function(userId, done){
 	})
 }
 
-var hasUpvotedBug = function(userId, bugId, done){
-	if(!userId)
-		return done(null, false)
-	User.findOne({_id: userId}, function(err, user){
-		if(err) return done(err);
-		if(user) return done(null, user.upvoted_bugs.includes(bugId));
-		else return done(new Error("User Does not exist!!"));
-	})
-}
-
-var hasUpvotedComment = function(userId, commentId, done){
+var hasUpvotedPost = function(userId, postId, done){
 	if(!userId)
 		return done(null, false);
-	User.findOne({_id: userId}, function(err, user){
+	Upvote.findOne({"post_id": postId, user_id: userId}, function(err, upvote){
 		if(err) return done(err);
-		if(user) return done(null, user.upvoted_comments.includes(commentId));
-		else return done(new Error("User Does not exist!!!"));
+		if(upvote) return done(null, true);
+		return done(null, false);
 	})
 }
 
@@ -192,6 +178,13 @@ var getTimeSince = function(objectId){
 		return minutes > 1 ? minutes + " Minutes" : "1 Minute"
 	}
 	return seconds > 1 ? seconds + " Seconds" : "1 Second";
+}
+
+var getNumUpvotes = function(postId, done){
+	Upvote.find({post_id: postId}, function(err, upvotes){
+		if(err) return done(err);
+		return done(null, upvotes.length);
+	});
 }
 
 module.exports = {

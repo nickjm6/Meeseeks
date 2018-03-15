@@ -41,7 +41,6 @@ module.exports = function(passport){
                     newUser.token = token;             
                     newUser.name  = profile.name.givenName + ' ' + profile.name.familyName;
                     newUser.email = profile.emails[0].value; 
-                    newUser.upvoted = [];
                     newUser.save(function(err) {
                         if (err)
                             throw err;
