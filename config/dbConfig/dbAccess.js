@@ -75,20 +75,17 @@ var getBug = function(bugId, userId, done){
 						if(err3) return done(err3);
 						hasUpvotedPost(userId, bugId, function(err4, hasUpvoted){
 							if(err4) return done(err4)
-							getNumUpvotes(bugId, function(err5, numUpvotes){
-								if(err5) return done(err5);
-								return done(null, {
-									id: bug._id,
-									title: bug.title,
-									description: bug.description,
-									product: productName,
-									post_type: bug.post_type,
-									username: username,
-									comments: comments.length,
-									upvotes: numUpvotes,
-									timeSince: getTimeSince(bug._id) + " Ago",
-									hasUpvoted: hasUpvoted
-								});
+							return done(null, {
+								id: bug._id,
+								title: bug.title,
+								description: bug.description,
+								product: productName,
+								post_type: bug.post_type,
+								username: username,
+								comments: comments.length,
+								upvotes: bug.upvotes,
+								timeSince: getTimeSince(bug._id) + " Ago",
+								hasUpvoted: hasUpvoted
 							});
 						})
 					})
@@ -108,15 +105,13 @@ var getComment = function(commentId, userId, done){
 			getUser(comment.user_id, function(err1, username){
 				if(err1) return done(err1);
 				hasUpvotedPost(userId, commentId, function(err2, hasUpvoted){
-					var upvoteText;
-					if(comment.upvotes === 1) upvoteText = "1 Upvote";
-					else upvoteText = comment.upvotes + " Upvotes";
+					if(err2) return done(err2);
 					return done(null, {
 						id: comment._id,
 						commentText: comment.comment,
 						username: " @" + username,
 						timeSince: getTimeSince(comment._id) + " Ago",
-						upvotes: upvoteText,
+						upvotes: comment.upvotes,
 						hasUpvoted: hasUpvoted
 					});
 				});
@@ -178,13 +173,6 @@ var getTimeSince = function(objectId){
 		return minutes > 1 ? minutes + " Minutes" : "1 Minute"
 	}
 	return seconds > 1 ? seconds + " Seconds" : "1 Second";
-}
-
-var getNumUpvotes = function(postId, done){
-	Upvote.find({post_id: postId}, function(err, upvotes){
-		if(err) return done(err);
-		return done(null, upvotes.length);
-	});
 }
 
 module.exports = {

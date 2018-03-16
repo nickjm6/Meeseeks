@@ -262,17 +262,23 @@ app.post("/upvote-post", function(req, res){
 
 	var userId = req.user._id;
 	var postId = req.body.postId;
+	var postType = req.body.postType;
 
 	if(!postId){
 		res.status(400).send("Please provide me with a post ID!");
 		return;
 	}
+
+	if(!postType){
+		res.status(400).send("Is it a bug or comment?!");
+		return;
+	}
 	
-	dbMod.upvote(userId, postId, function(err, response){
+	dbMod.upvote(userId, postId, postType, function(err, response){
 		if(err){
 			res.status(500).send(err.message);
 		} else{
-			res.send(response);
+			res.send(response.toString());
 		}
 	});
 });
@@ -285,15 +291,21 @@ app.post("/remove-upvote-post", function(req, res){
 
 	var postId = req.body.postId;
 	var userId = req.user._id;
+	var postType = req.body.postType;
 
 	if(!postId){
 		res.status(400).send("Please provide me with a post ID");
 		return;
 	}
 
-	dbMod.removeUpvote(userId, postId, function(err, response){
+	if(!postType){
+		res.status(400).send("Is it a bug or comment?!");
+		return;
+	}
+
+	dbMod.removeUpvote(userId, postId, postType, function(err, response){
 		if(err) res.status(500).send(err.message);
-		else res.send(response);
+		else res.send(response.toString());
 	});
 });
 

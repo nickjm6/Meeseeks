@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	//KO variables that the page will use
-	var app = {
+	var bugDetails = {
 		bugId: ko.observable(),
 		bugTitle: ko.observable(),
 		productName: ko.observable(),
@@ -10,8 +10,10 @@ $(document).ready(function(){
 		upvotes: ko.observable(),
 		bugDescription: ko.observable(),
 		hasUpvotedBug: ko.observable(),
-		upvoteText: ko.observable(),
-		isLoggedIn: ko.observable()
+		isLoggedIn: ko.observable(),
+		badgeClass: ko.observable(),
+		badgeText: ko.observable(),
+		commentList: ko.observableArray()
 	};
 
 	//Adds a comment to the list of comments
@@ -21,126 +23,94 @@ $(document).ready(function(){
 		$("#alertDiv").append(alert);
 	}
 
-	var addComment = function(comment){
-		var hasUpvoted = comment.hasUpvoted
-		var list = $("#postList");
-		var listItem = $("<li class='list-group-item'></li>");
-		var age = $("<small>" + comment.timeSince + "</small>");
-		var username = $("<small class='font-weight-bold text-secondary'>" + comment.username + "</small>");
-		var commentText = $("<p>" + comment.commentText + "</p>")
-		var upvotes = $("<div class='alert alert-info'>" + comment.upvotes + "</div>"); 
-		var upvoteButton = $("<button class='btn'></button>");
+	var Comment = function(input){
+		var self = this;
 
-		if(hasUpvoted){
-			upvoteButton.addClass("btn-danger")
-			upvoteButton.text("Remove Upvote")
-		} else{
-			upvoteButton.addClass("btn-success");
-			upvoteButton.text("Upvote")
-		}
+		this.id = input.id;
+		this.hasUpvoted = ko.observable(input.hasUpvoted)
+		this.age = input.timeSince;
+		this.username = input.username;
+		this.commentText = input.commentText;
+		this.numUpvotes = ko.observable(input.upvotes);
+		this.upvoteText = ko.computed(function(){
+			return self.numUpvotes() === 1 ? "1 Upvote" : self.numUpvotes() + " Upvotes";
+		});
 
-		var removeUpvote = function(){
-			$.post("remove-upvote-comment", {commentId: comment.id}, function(newUpvotes){
-				upvotes.text(newUpvotes);
-				hasUpvoted = false;
-				upvoteButton.removeClass("btn-danger");
-				upvoteButton.addClass("btn-success");
-				upvoteButton.text("Upvote")
+		this.upvoteButtonClass = ko.computed(function(){
+			return self.hasUpvoted() ? "btn btn-danger" : "btn btn-success";
+		})
+		this.upvoteButtonText = ko.computed(function(){
+			return self.hasUpvoted() ? "Remove Upvote" : "Upvote";
+		})
+
+		this.upvoteFunction = function(){
+			var path = self.hasUpvoted() ? "remove-upvote-post" : "upvote-post"
+			$.post(path, {postId: self.id, postType: "comment"}, function(result){
+				self.numUpvotes(parseInt(result));
+				self.hasUpvoted(!self.hasUpvoted())
 			}).fail(function(err){
-				addAlert(err.responseText, "danger");
+				addAlert(err.responseText, "danger")
 			})
 		}
-
-		var upvote = function(){
-			$.post("upvote-comment", {commentId: comment.id}, function(newUpvotes){
-				upvotes.text(newUpvotes);
-				hasUpvoted = true;
-				upvoteButton.removeClass("btn-success");
-				upvoteButton.addClass("btn-danger");
-				upvoteButton.text("Remove Upvote")
-			}).fail(function(err){
-				addAlert(err.responseText, "danger");
-			})
-		}
-
-
-		upvoteButton.click(function(){
-			if(hasUpvoted) removeUpvote();
-			else upvote();
+		this.isUpvoteButtonVisible = ko.computed(function(){
+			return bugDetails.isLoggedIn();
 		})
-
-		list.append(listItem);
-		listItem.append(age);
-		listItem.append(username);
-		listItem.append(commentText);
-		listItem.append(upvotes);
-		if(app.isLoggedIn())
-			listItem.append(upvoteButton)
 	}
 
-	var removeUpvoteBug = function(){
-		$.post("remove-upvote-bug", {bugId: app.bugId()}, function(newUpvotes){
-			app.upvotes(newUpvotes);
-			app.hasUpvotedBug(false);
+	bugDetails.upvoteFunction = function(){
+		var path = bugDetails.hasUpvotedBug() ? "remove-upvote-post" : "upvote-post";
+		$.post(path, {postId: bugDetails.bugId(), postType: "bug"}, function(result){
+			bugDetails.upvotes(parseInt(result));
+			bugDetails.hasUpvotedBug(!bugDetails.hasUpvotedBug());
 		}).fail(function(err){
-			addAlert(err.responseText, "danger")
+			addAlert(err.responseText, "danger");
 		})
 	}
 
-	var upvoteBug = function(){
-		$.post("upvote-bug", {bugId: app.bugId()}, function(newUpvotes){
-			app.upvotes(newUpvotes);
-			app.hasUpvotedBug(true);
-		}).fail(function(err){
-			addAlert(err.responseText, "danger")
-		})
-	}
-
-	app.productPath = ko.computed(function(){
-		return "/product?productName=" + app.productName();
+	bugDetails.upvoteText = ko.computed(function(){
+		return bugDetails.upvotes() === 1 ? "1 Upvote" : bugDetails.upvotes() + " Upvotes"
 	})
 
-	app.productName.subscribe(function(name){
-		app.imageSource("/resources/phones/" + app.productName() + ".png");
+	bugDetails.upvoteButtonClass = ko.computed(function(){
+		return bugDetails.hasUpvotedBug() ? "btn btn-danger" : "btn btn-success"
+	});
+
+	bugDetails.upvoteButtonText = ko.computed(function(){
+		return bugDetails.hasUpvotedBug() ? "Remove Upvote" : "Upvote"
+	})
+	
+	bugDetails.productPath = ko.computed(function(){
+		return "/product?productName=" + bugDetails.productName();
 	})
 
-	app.hasUpvotedBug.subscribe(function(value){
-		if(value){
-			app.upvoteText("Remove Upvote");
-			$("#upvoteButton").removeClass("btn-success");
-			$("#upvoteButton").addClass("btn-danger")
-		} else{
-			app.upvoteText("Upvote")
-			$("#upvoteButton").removeClass("btn-danger");
-			$("#upvoteButton").addClass("btn-success")
-		}
+	bugDetails.productName.subscribe(function(name){
+		bugDetails.imageSource("/resources/phones/" + bugDetails.productName() + ".png");
 	})
 
-	app.bugId(getURLParam("bugId"));
+	bugDetails.bugId(getURLParam("bugId"));
 
 	//Gets info on the bug report
-	$.get("/bugReport", {bugId: app.bugId()}, function(bug){
+	$.get("/bugReport", {bugId: bugDetails.bugId()}, function(bug){
 		document.title = bug.title;
-		app.hasUpvotedBug(bug.hasUpvoted)
-		app.bugTitle(bug.title);
-		app.bugDescription(bug.description);
-		app.productName(bug.product);
-		if(bug.post_type === "form")
-			$("#postTypeBadge").addClass("badge-warning").text("Form")
-		else
-			$("#postTypeBadge").addClass("badge-danger").text("Function")
-
-		app.posterName(bug.username);
-		app.upvotes(bug.upvotes);
-		app.howLongAgo(bug.timeSince);
+		bugDetails.hasUpvotedBug(bug.hasUpvoted)
+		bugDetails.bugTitle(bug.title);
+		bugDetails.bugDescription(bug.description);
+		bugDetails.productName(bug.product);
+		var badgeClass = bug.post_type === "form" ? "badge badge-warning" : "badge badge-danger";
+		var badgeText = bug.post_type === "form" ? "Form" : "Function";
+		bugDetails.badgeClass(badgeClass);
+		bugDetails.badgeText(badgeText)
+		bugDetails.posterName(bug.username);
+		bugDetails.upvotes(bug.upvotes);
+		bugDetails.howLongAgo(bug.timeSince);
 	}).fail(function(err){
 		addAlert(err.responseText, "danger", false);
 	});
 
-	$.get("/comments", {bugId: app.bugId}, function(comments){
+	$.get("/comments", {bugId: bugDetails.bugId}, function(comments){
 		comments.forEach(function(commentId){
 			$.get("/comment", {commentId: commentId}, function(comment){
-				addComment(comment);
+				bugDetails.commentList.push(new Comment(comment))
 			}).fail(function(err){
 				addAlert(err.responseText, "danger", false)
 			});
@@ -149,7 +119,7 @@ $(document).ready(function(){
 		addAlert(err.responseText, "danger", false);
 	});
 
-	$.get("/isLoggedIn", function(result){app.isLoggedIn(result)}).fail(function(err){app.isLoggedIn(false)});
+	$.get("/isLoggedIn", function(result){bugDetails.isLoggedIn(result)}).fail(function(err){bugDetails.isLoggedIn(false)});
 
 	$("#submitComment").click(function(){
 		var description = $("#commentDescription").val();
@@ -157,9 +127,9 @@ $(document).ready(function(){
 			addAlertDontRemove("Comment text is required", "danger");
 			return;
 		}
-		$.post("/comment", {comment: description, bugId: app.bugId()}, function(response){
+		$.post("/comment", {comment: description, bugId: bugDetails.bugId()}, function(response){
 			$.get("/comment", {commentId: response}, function(comment){
-				addComment(comment);
+				bugDetails.commentList.push(new Comment(comment))
 				addAlert("Successfully added comment!", "success")
 			}).fail(function(err){
 				addAlert(err.responseText, "danger", false)
@@ -170,19 +140,5 @@ $(document).ready(function(){
 		})
 	});
 
-	$("#upvoteButton").click(function(){
-		var path;
-		if(app.hasUpvotedBug()) path = "/remove-upvote-bug";
-		else path = "/upvote-bug";
-
-		$.post(path, {bugId: app.bugId()}, function(newUpvotes){
-			app.upvotes(newUpvotes);
-			app.hasUpvotedBug(!app.hasUpvotedBug());
-		}).fail(function(err){
-			addAlert(err.responseText, "danger")
-		})
-	})
-
-
-	ko.applyBindings(app);
+	ko.applyBindings(bugDetails);
 });

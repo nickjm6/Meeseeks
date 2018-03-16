@@ -111,21 +111,22 @@
                     <!--First post-->
                     <div class="card-block">
                         <div class="list-group" data-bind="foreach: posts">
-                            <a class="bug-list list-group-item list-group-item-action" data-bind="attr: {href: linkLoc}">
+                            <a class="bug-list list-group-item list-group-item-action" data-bind="attr: {href: linkLocation}">
                                 <small data-bind="text: age"></small>
                                 <h3 class="mb-0" data-bind="text: title"></h3>
-                                <span class="badge badge-warning" data-bind="text: badgeText"></span>
+                                <span class="badge badge-warning" data-bind="text: badgeText, attr: {class: badgeClass}"></span>
                                 <small class="font-weight-bold text-secondary" data-bind="text: username"></small>
                                 <div class="row">
                                     <div class="col-xl-11"><p data-bind="text: description"></p></div>
                                 </div>
                                 <div class="alert alert-info">
-                                    <span data-bind="text: comments"></span><br>
-                                    <span data-bind="text: upvotes"></span>
+                                    <span data-bind="text: commentText"></span><br>
+                                    <span data-bind="text: upvoteText"></span>
                                 </div>
                             </a>
                             <div class="list-group-item">
-                                <button class="btn btn-success" data-bind="text: upvoteButtonText, visible: visibleUpvoteButton">
+                                <button data-bind="text: upvoteButtonText, visible: isUpvoteButtonVisible, 
+                                attr: {class: upvoteButtonClass}, click: upvoteFunction">
                                 </button>
                             </div>
                         </div>

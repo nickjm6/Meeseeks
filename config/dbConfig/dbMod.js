@@ -13,6 +13,7 @@ var addBug = function(title, description, userId, productId, postType, done){
 	newBugReport.user_id = userId;
 	newBugReport.product_id = productId;
 	newBugReport.post_type = postType;
+	newBugReport.upvotes = 0;
 	newBugReport.save(function(err) {
         if (err) return done(err)
         return done(null, newBugReport._id)
@@ -25,9 +26,25 @@ var addComment = function(bugId, userId, comment, done){
 	newComment.comment = comment;
 	newComment.user_id = userId;
 	newComment.bug_id = bugId;
+	newComment.upvotes = 0;
 	newComment.save(function(err){
 		if(err) return done(err);
 		return done(null, newComment._id)
+	})
+}
+
+var updateUpvotes = function(postId, dbCollection, done){
+	Upvote.find({post_id: postId}, function(err, posts){
+		if(err) return done(err);
+		dbCollection.findOne({_id: postId}, function(err1, post){
+			if(err) return done(err)
+			if(!post)return done(new Error("Post not found"));
+			post.upvotes = posts ? posts.length : 0;
+			post.save(function(errSave){
+				if(errSave) return done(errSave);
+				return done(null, post.upvotes);
+			})
+		})
 	})
 }
 
@@ -47,17 +64,26 @@ var upvote = function(userId, postId, postType, done){
 				var newUpvote = new Upvote({_id: mongoose.Types.ObjectId(), post_id: postId, user_id: userId})
 				newUpvote.save(function(errSave){
 					if(errSave) return done(err);
-					return done(null);
+					updateUpvotes(postId, postDB, function(errUpd, numUpvotes){
+						if(errUpd) return done(errUpd);
+						return done(null, numUpvotes)
+					});
 				})
 			})
 		})
 	})
 }
 
-var removeUpvote = function(userId, postId, done){
-	Upvote.remove({post_id, postId, user_id: userId}, function(err){
+var removeUpvote = function(userId, postId, postType, done){
+	if(postType != "bug" && postType != "coment")
+		return done(new Error("PostType must be either bug or comment"));
+	var postDB	 = postType == "bug" ? BugReport : Comment
+	Upvote.remove({post_id: postId, user_id: userId}, function(err){
 		if (err) return done(err);
-		return done(null);
+		updateUpvotes(postId, postDB, function(errUpd, numUpvotes){
+			if(errUpd) return done(errUpd);
+			return done(null, numUpvotes)
+		});
 	});
 }
 

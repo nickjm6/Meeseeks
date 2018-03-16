@@ -60,27 +60,22 @@
                      <div class="container" id="alertDiv" style="text-align: center;"></div>
                     
                     <div class="card-block">
-                        <ul class="list-group" id="postList">
+                        <ul class="list-group">
 
                             <!--OP-->
                             <li class="list-group-item">
                                 <small data-bind="text: howLongAgo"></small>
                                 <h3 class="mb-0" data-bind="text: bugTitle"></h3>
-                                <span class="badge" id="postTypeBadge"></span>
+                                <span class="badge" data-bind="attr: {class: badgeClass}, text: badgeText"></span>
                                 <small class="font-weight-bold text-secondary" data-bind="text: posterName"></small>
                                 <div class="row">
-                                    <!-- <div class="col-xl-1 text-center">
-                                        <p>&#9650;</p>
-                                        <p data-bind="text: upvotes"></p>
-                                        <p>&#9660;</p>
-                                    </div> -->
                                     <div class="col-xl-11">
                                         <p data-bind="text: bugDescription"></p>
                                         <!-- <video src="resources/post-video.mp4" controls></video> -->
-                                        <div class="alert alert-info" data-bind="text: upvotes"></div>
+                                        <div class="alert alert-info" data-bind="text: upvoteText"></div>
                                     </div>
                                 </div>
-                                <div class="row" data-bind="visible: isLoggedIn"><button id="upvoteButton" data-bind="text: upvoteText" class="btn"></button></div>
+                                <div class="row" data-bind="visible: isLoggedIn"><button data-bind="text: upvoteButtonText, attr: {class: upvoteButtonClass}, click: upvoteFunction"></button></div>
                             </li>
 
                             <!--buttons for changing the type of comment you're viewing-->
@@ -91,6 +86,16 @@
                                     <button id="btnCompany" type="button" class="btn">Company Responses</button>
                                 </div>
                             </li>
+
+                            <div class="list-group" data-bind="foreach: commentList">
+                                <li class="list-group-item">
+                                    <small data-bind="text: age"></small>
+                                    <small class="font-weight-bold text-secondary" data-bind="text: username"></small>
+                                    <p data-bind="text: commentText"></p>
+                                    <div class="alert alert-info" data-bind="text: upvoteText"></div>
+                                    <button data-bind="attr: {class: upvoteButtonClass}, text: upvoteButtonText, click: upvoteFunction"></button>
+                                </li>
+                            </div>
 
                             <!--New Comment Form-->
                             <li class="list-group-item">
