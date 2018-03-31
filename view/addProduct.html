@@ -1,0 +1,89 @@
+<!--*********-->
+<!--Meeseeks*-->
+<!--index.htm-->
+<!--*********-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <script type='text/javascript' src='/javascript/knockout.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="css/awesomplete.css">
+        <script src="javascript/awesomplete.js"></script>
+        <script type="text/javascript" src="javascript/index.js"></script>
+
+        <title>Meeseeks</title>
+
+    </head>
+
+    <body>
+        <!--Jumbotron-->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container-fluid">
+            <div class='navbar-header'>
+              <a class="navbar-brand" href="/">Meeseeks</a>
+            </div>
+            <ul class="nav navbar-nav" style="text-align: right;">
+              <li><a href="/auth/facebook" class="btn btn-primary" data-bind="visible: !isSignedIn()">
+                <span class="fa fa-facebook"></span> Facebook Sign-In</a>
+              </li>
+              <li><a href="/logout" class="btn btn-danger" data-bind="visible: isSignedIn()">Logout</a></li>
+            </ul>
+          </div>
+        </nav>
+        <div class="jumbotron jumbotron-fluid text-center mb-0">
+            <div class="container">
+                <h1>Add Product</h1>
+                <input type="text" class="form-control" id="productName" placeholder="Product Name"><br>
+                <img src="#" id="imgDisplay" alt="No Image Selected"/><br><br>
+                <label class="btn btn-info btn-file" for="imageBtn">
+                    <input class="form-control" id="imageBtn" type="file" hidden="true" accept=".png,.jpg"
+                    onchange="readURL(this);"></input>
+                    Add Image
+                </label><br>
+                <button id="btnSubmit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </body>
+
+    <script type="text/javascript">
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imgDisplay')
+                        .attr('src', e.target.result)
+                        .width(150)
+                        .height(150);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $(document).ready(function(){
+            $("#btnSubmit").click(function(){
+                var imgInput = document.getElementById("imageBtn").files;
+                if(imgInput && imgInput[0]){
+                    var reader = new FileReader();
+                    reader.onload = function(e){
+                        var productName = $("#productName").val();
+                        var img = e.target.result;
+                        $.post("/addProduct", {img: img, productName: productName}, function(result){
+                            alert(result);
+                        }).fail(function(err){
+                            alert(err.responseText);
+                        });
+                    }
+
+                    reader.readAsBinaryString(imgInput[0]);
+                }
+            })
+        });
+    </script>
+</html>

@@ -175,6 +175,14 @@ var getTimeSince = function(objectId){
 	return seconds > 1 ? seconds + " Seconds" : "1 Second";
 }
 
+var getProductImageBuffer = function(productName, done){
+	Product.findOne({name: productName}, function(err, product){
+		if(err) return done(err);
+		if(product) return done(null, product.img);
+		return done(new Error("Product does not exist"));
+	})
+}
+
 module.exports = {
 	getComments: getComments,
 	getComment: getComment,
@@ -182,4 +190,5 @@ module.exports = {
 	getBug: getBug,
 	getProducts: getProducts,
 	getProduct: getProduct,
+	getProductImageBuffer: getProductImageBuffer
 }

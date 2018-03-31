@@ -87,9 +87,24 @@ var removeUpvote = function(userId, postId, postType, done){
 	});
 }
 
+var addProduct = function(productName, img, done){
+	Product.findOne({name: productName}, function(err, product){
+		if(err) return done(err);
+		if(product) return done(new Error("Product already exists"));
+		var newProduct = new Product({_id: mongoose.Types.ObjectId()});
+		newProduct.name = productName;
+		newProduct.img = img;
+		newProduct.save(function(errSave){
+			if(errSave) return done(errSave);
+			return done(null)
+		})
+	})
+}
+
 module.exports = {
 	addBug: addBug,
 	addComment: addComment,
 	upvote: upvote,
-	removeUpvote: removeUpvote
+	removeUpvote: removeUpvote,
+	addProduct: addProduct
 }

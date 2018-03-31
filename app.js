@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var passport = require("passport");
+var fs = require("fs");
 
 var config = require("./config/config");
 
@@ -48,6 +49,10 @@ app.get("/product", function(req, res){
 
 app.get("/post", function(req, res){
 	res.sendFile(__dirname + "/view/post.html");
+})
+
+app.get("/addProduct", function(req, res){
+	res.sendFile(__dirname + "/view/addProduct.html")
 })
 
 //---------------------------------------------------------------------
@@ -144,6 +149,20 @@ app.get("/comment", function(req, res){
 	} else{
 		res.status(400).send("Oops, you have not provided me with a comment ID");
 	}
+});
+
+app.get("/productImage", function(req, res){
+	var productName = req.query.productName;
+	var imgBuffer = dbAccess.getProductImageBuffer(productName, function(err, result){
+		if(err)
+			res.status(500).send(err.message);
+		else{
+			fs.writeFile("temp.png", result, "binary", function(errWrite){
+				if(errWrite) res.status(500).send(errWrite.message);
+				else res.sendFile(__dirname + "/temp.png");
+			});
+		}
+	})
 })
 
 //________________________________________________________________________________
@@ -306,6 +325,28 @@ app.post("/remove-upvote-post", function(req, res){
 	dbMod.removeUpvote(userId, postId, postType, function(err, response){
 		if(err) res.status(500).send(err.message);
 		else res.send(response.toString());
+	});
+});
+
+app.post("/addProduct", function(req, res){
+	var productName = req.body.productName;
+	var img = req.body.img
+
+	if(!productName){
+		res.status(400).send("Please provide me with a product name");
+		return
+	}
+
+	if(!img){
+		res.status(400).send("Please provide me with an image");
+		return;
+	}
+	
+	dbMod.addProduct(productName, img, function(err){
+		if(err)
+			res.status(500).send(err.message);
+		else
+			res.send("Success");
 	});
 });
 
